@@ -16,5 +16,5 @@ class Ping(commands.Cog):
         await ctx.send(f"Current latency is {latency} ms.")
 
 
-async def setup(client):
-    await client.add_cog(Ping(client))
+async def setup(bot):
+    await bot.add_cog(Ping(bot))
