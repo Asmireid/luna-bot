@@ -15,7 +15,7 @@ class Moderation(commands.Cog):
         await ctx.channel.purge(limit=count + 1)  # +1 accounts for the clear command itself
 
         if config.display_confirmation:
-            conf = await ctx.send(f"{count} message(s) cleared.")
+            conf = try_reply(ctx, f"{count} message(s) cleared.")
             await try_delete(conf)
 
     @commands.command()
@@ -28,7 +28,7 @@ class Moderation(commands.Cog):
             conf_embed.add_field(name="Kicked:",
                                  value=f"{member.mention} has been kicked from the server by {ctx.author.mention}.")
             conf_embed.add_field(name="Reason:", value=mod_reason)
-            conf = await ctx.send(conf_embed)
+            conf = try_reply(ctx, conf_embed)
             await try_delete(conf)
 
     @commands.command()
@@ -41,7 +41,7 @@ class Moderation(commands.Cog):
             conf_embed.add_field(name="Banned:",
                                  value=f"{member.mention} has been banned from the server by {ctx.author.mention}.")
             conf_embed.add_field(name="Reason:", value=mod_reason)
-            conf = await ctx.send(conf_embed)
+            conf = try_reply(ctx, conf_embed)
             await try_delete(conf)
 
     @commands.command(name="unban")
@@ -55,7 +55,7 @@ class Moderation(commands.Cog):
             conf_embed = discord.Embed(title="Success", color=discord.Color.green())
             conf_embed.add_field(name="Unbanned:",
                                  value=f"<@{user_id}> has been banned from the server by {ctx.author.mention}.")
-            conf = await ctx.send(conf_embed)
+            conf = try_reply(ctx, conf_embed)
             await try_delete(conf)
 
 

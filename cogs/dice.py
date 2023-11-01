@@ -1,9 +1,7 @@
-import os
 import random
 import re
 
-import discord
-from discord.ext import commands
+from utilities import *
 
 
 class Dice(commands.Cog):
@@ -33,7 +31,7 @@ class Dice(commands.Cog):
         msg_embed.description = '\n'.join((f"#{i+1}: **{roll}**" for i, roll in enumerate(rolls)))
         msg_embed.add_field(name='sum', value=f'total = {sum(rolls)} + {offset} = {sum(rolls)+offset}', inline=True)
 
-        await ctx.send(embed=msg_embed)
+        await try_reply(ctx, msg_embed)
 
 
 async def setup(bot):

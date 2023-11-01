@@ -1,7 +1,6 @@
-import discord
-import os
 import random
-from discord.ext import commands
+
+from utilities import *
 
 
 class Magic8ball(commands.Cog):
@@ -28,7 +27,7 @@ class Magic8ball(commands.Cog):
             msg_embed.set_footer(text="Don't trust Luna.",
                                  icon_url="https://static-00.iconduck.com/assets.00/new-moon-face-emoji-2048x2048-95mgz2k9.png")
 
-            await ctx.send(embed=msg_embed)
+            await try_reply(ctx, msg_embed)
 
 
 async def setup(bot):
