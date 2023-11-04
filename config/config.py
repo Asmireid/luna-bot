@@ -3,6 +3,7 @@ import configparser
 # Read the configuration file
 config = configparser.ConfigParser()
 config.read("config/config.ini")
+bot_token = str(config['credentials']['bot_token'])
 command_prefix = str(config['settings']['command_prefix'])
 delete_invocation = bool(config['settings']['delete_invocation'])
 display_confirmation = bool(config['settings']['display_confirmation'])

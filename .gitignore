@@ -1,6 +1,5 @@
 .idea
 */__pycache__
 __pycache__
-.env
 config/config.json
 config/config.ini
