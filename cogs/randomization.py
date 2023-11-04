@@ -13,7 +13,7 @@ class Randomization(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(aliases=["8ball", "eightball"])
+    @commands.command(aliases=['8ball', 'eightball'])
     async def magic_eightball(self, ctx, *, question):
         with open("cogs/magic8ball_responses.txt", "r") as f:
             responses = f.readlines()
@@ -29,9 +29,8 @@ class Randomization(commands.Cog):
             msg_embed.set_footer(text=f"***{config.eightball_footer}***")
 
             await try_reply(ctx, msg_embed)
-            await try_delete_invocation(ctx.message)
 
-    @commands.command(aliases=["dice", "d"])
+    @commands.command(aliases=['r', 'dice', 'd'])
     async def roll(self, ctx, *, cmd: str):
         parts = re.split(r"[d+]+", cmd)
         try:
@@ -51,7 +50,6 @@ class Randomization(commands.Cog):
         msg_embed.add_field(name='sum', value=f'total = {sum(rolls)} + {offset} = {sum(rolls) + offset}', inline=True)
 
         await try_reply(ctx, msg_embed)
-        await try_delete_invocation(ctx.message)
 
 
 async def setup(bot):

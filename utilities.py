@@ -17,6 +17,13 @@ async def try_delete_confirmation(msg):
 
 
 async def try_reply(ctx, msg):
+    await try_delete_invocation(ctx.message)
     if isinstance(msg, discord.Embed):
         return await ctx.reply(embed=msg, mention_author=True) if config.reply else await ctx.send(embed=msg)
     return await ctx.reply(msg, mention_author=True) if config.reply else await ctx.send(msg)
+
+
+async def try_display_confirmation(ctx, msg):
+    if config.display_confirmation:
+        conf = await try_reply(ctx, msg)
+        await try_delete_confirmation(conf)
