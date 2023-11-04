@@ -38,7 +38,8 @@ class SetConfig(commands.Cog):
     async def set(self, ctx, option, *, value: str):
         switch_options = {
             'status': bot_status,
-            'command_prefix': command_prefix
+            'command_prefix': command_prefix,
+            'prefix': command_prefix
         }
 
         set_function = switch_options.get(option, None)
