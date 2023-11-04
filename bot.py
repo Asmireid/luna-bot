@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands, tasks
 from itertools import cycle
 from dotenv import load_dotenv
+from cogs import update_bot
 
 load_dotenv()
 
@@ -13,7 +14,8 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 async def update_status():
-    await bot.change_presence(activity=discord.CustomActivity(name="Eating tacos. 🌮"))
+    status = update_bot.get_status()
+    await bot.change_presence(activity=discord.CustomActivity(name=status))
 
 
 @bot.event
