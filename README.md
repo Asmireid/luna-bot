@@ -1,5 +1,6 @@
 # luna-bot
 ## Usage
-1) create a .env file in this directory
-2) add "BOT_TOKEN=[your token here]" to .env file
-3) run bot.py
+1) copy-paste 'template.env' as '.env'
+2) copy-paste 'config/template-config.json' as 'config.json'
+3) add Discord bot token to .env file
+4) run bot.py
