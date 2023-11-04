@@ -20,7 +20,7 @@ def get_status():
 
 def update_status(new_status):
     try:
-        with open("config/config.json", "w") as f:
+        with open("config/config.json", "r") as f:
             bot_config = json.load(f)
 
         bot_config["status"] = new_status

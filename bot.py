@@ -5,12 +5,13 @@ import discord
 from discord.ext import commands, tasks
 from itertools import cycle
 from dotenv import load_dotenv
+from config import config
 from cogs import update_bot
 
 load_dotenv()
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix=config.command_prefix, intents=intents)
 
 
 async def update_status():
