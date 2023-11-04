@@ -6,6 +6,6 @@
 4) add Discord bot token to .env file
 5) run bot.py
 
-bot configurations are in 'config.ini'
+modify bot configurations in 'config.ini'
 
-DON'T modify the copied 'config.json'
+DON'T modify the copied 'config.json' unless you know what you are doing
