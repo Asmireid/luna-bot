@@ -17,15 +17,14 @@ class Magic8ball(commands.Cog):
             responses = f.readlines()
             response = random.choice(responses)
 
-            msg_embed = discord.Embed(title="Luna's Magic 8 Ball",
+            msg_embed = discord.Embed(title=f"{config.bot_name}'s Magic 8 Ball",
                                       description=question,
                                       color=discord.Color.dark_embed())
 
             msg_embed.set_author(name=f"Requested by {ctx.author.nick}", icon_url=ctx.author.avatar)
             msg_embed.set_thumbnail(url="https://static.thenounproject.com/png/371802-200.png")
             msg_embed.add_field(name="Ball's Insight: ", value=response, inline=True)
-            msg_embed.set_footer(text="Don't trust Luna.",
-                                 icon_url="https://static-00.iconduck.com/assets.00/new-moon-face-emoji-2048x2048-95mgz2k9.png")
+            msg_embed.set_footer(text=f"***{config.eightball_footer}***")
 
             await try_reply(ctx, msg_embed)
 
