@@ -2,5 +2,10 @@
 ## Usage
 1) copy-paste 'template.env' as '.env'
 2) copy-paste 'config/template-config.json' as 'config.json'
-3) add Discord bot token to .env file
-4) run bot.py
+3) copy-paste 'config/template-config.ini' as 'config.ini'
+4) add Discord bot token to .env file
+5) run bot.py
+
+bot configurations are in 'config.ini'
+
+DON'T modify the copied 'config.json'
