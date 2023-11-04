@@ -2,17 +2,16 @@ import os
 import asyncio
 
 import discord
-from discord.ext import commands, tasks
-from itertools import cycle
+from discord.ext import commands
 from config import config
-from cogs import update_bot
+from cogs import set_config
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=config.command_prefix, intents=intents)
 
 
 async def update_status():
-    status = update_bot.get_status()
+    status = set_config.get_status()
     await bot.change_presence(activity=discord.CustomActivity(name=status))
 
 
@@ -26,7 +25,6 @@ async def load():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
             await bot.load_extension(f"cogs.{filename[:-3]}")
-            # print(f"{filename[:-3]} is loaded.")
 
 
 async def main():

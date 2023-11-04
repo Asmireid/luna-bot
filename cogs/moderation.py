@@ -15,8 +15,8 @@ class Moderation(commands.Cog):
         await ctx.channel.purge(limit=count + 1)  # +1 accounts for the clear command itself
 
         if config.display_confirmation:
-            conf = try_reply(ctx, f"{count} message(s) cleared.")
-            await try_delete(conf)
+            conf = await try_reply(ctx, f"{count} message(s) cleared.")
+            await try_delete_confirmation(conf)
 
     @commands.command()
     @commands.has_permissions(kick_members=True)
@@ -28,8 +28,9 @@ class Moderation(commands.Cog):
             conf_embed.add_field(name="Kicked:",
                                  value=f"{member.mention} has been kicked from the server by {ctx.author.mention}.")
             conf_embed.add_field(name="Reason:", value=mod_reason)
-            conf = try_reply(ctx, conf_embed)
-            await try_delete(conf)
+            conf = await try_reply(ctx, conf_embed)
+            await try_delete_confirmation(conf)
+        await try_delete_invocation(ctx.message)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
@@ -41,8 +42,9 @@ class Moderation(commands.Cog):
             conf_embed.add_field(name="Banned:",
                                  value=f"{member.mention} has been banned from the server by {ctx.author.mention}.")
             conf_embed.add_field(name="Reason:", value=mod_reason)
-            conf = try_reply(ctx, conf_embed)
-            await try_delete(conf)
+            conf = await try_reply(ctx, conf_embed)
+            await try_delete_confirmation(conf)
+        await try_delete_invocation(ctx.message)
 
     @commands.command(name="unban")
     @commands.guild_only()
@@ -55,8 +57,9 @@ class Moderation(commands.Cog):
             conf_embed = discord.Embed(title="Success", color=discord.Color.green())
             conf_embed.add_field(name="Unbanned:",
                                  value=f"<@{user_id}> has been banned from the server by {ctx.author.mention}.")
-            conf = try_reply(ctx, conf_embed)
-            await try_delete(conf)
+            conf = await try_reply(ctx, conf_embed)
+            await try_delete_confirmation(conf)
+        await try_delete_invocation(ctx.message)
 
 
 async def setup(bot):

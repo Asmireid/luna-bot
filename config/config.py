@@ -3,17 +3,18 @@ import configparser
 
 # Read the configuration file
 with codecs.open('config/config.ini', 'r', encoding='utf-8') as f:
-    config = configparser.ConfigParser()
-    config.read_file(f)
+    configs = configparser.ConfigParser()
+    configs.read_file(f)
 
-bot_token = str(config['credentials']['bot_token'])
+bot_token = str(configs['credentials']['bot_token'])
 
-bot_name = str(config['customizations']['bot_name'])
-eightball_footer = str(config['customizations']['eightball_footer'])
+bot_name = str(configs['customizations']['bot_name'])
+bot_status = str(configs['customizations']['bot_status'])
+eightball_footer = str(configs['customizations']['eightball_footer'])
 
-command_prefix = str(config['settings']['command_prefix'])
-delete_invocation = bool(config['settings']['delete_invocation'])
-display_confirmation = bool(config['settings']['display_confirmation'])
-delete_confirmation = bool(config['settings']['delete_confirmation'])
-wait_secs = int(config['settings']['seconds_before_deleting_confirmation'])
-reply = bool(config['settings']['reply'])
+command_prefix = str(configs['settings']['command_prefix'])
+display_confirmation = configs.getboolean('settings', 'display_confirmation')
+delete_confirmation = configs.getboolean('settings', 'delete_confirmation')
+wait_time = int(configs['settings']['seconds_before_deleting_confirmation'])
+reply = configs.getboolean('settings', 'reply')
+delete_invocation = configs.getboolean('settings', 'delete_invocation')
