@@ -20,14 +20,13 @@ def get_status():
 
 def update_status(new_status):
     try:
-        with open("config/config.json", "r") as f:
+        with open("config/config.json", "w") as f:
             bot_config = json.load(f)
 
         bot_config["status"] = new_status
 
         with open("config/config.json", "w") as f:
             json.dump(bot_config, f, indent=4)
-        print('updated successfully')
 
     except FileNotFoundError:
         print("File not found. Make sure the file path is correct.")
