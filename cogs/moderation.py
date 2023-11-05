@@ -18,7 +18,7 @@ class Moderation(commands.Cog):
         await ctx.channel.purge(limit=count + 1, check=is_not_command_message)
 
         conf_embed = make_embed(ctx,
-                                title=f"{config.bot_name}'s Purge",
+                                title=f"{config.bot_name()}'s Purge",
                                 descr=f"{count} message(s) cleared.")
         await try_display_confirmation(ctx, conf_embed)
 
@@ -28,7 +28,7 @@ class Moderation(commands.Cog):
         await ctx.guild.kick(member)
 
         conf_embed = make_embed(ctx,
-                                title=f"{config.bot_name}'s Purge",
+                                title=f"{config.bot_name()}'s Purge",
                                 descr=f"{member.mention} has been kicked from the server.")
         conf_embed.add_field(name="Reason:", value=mod_reason)
         await try_display_confirmation(ctx, conf_embed)
@@ -39,7 +39,7 @@ class Moderation(commands.Cog):
         await ctx.guild.ban(member)
 
         conf_embed = make_embed(ctx,
-                                title=f"{config.bot_name}'s Purge",
+                                title=f"{config.bot_name()}'s Purge",
                                 descr=f"{member.mention} has been banned from the server.")
         conf_embed.add_field(name="Reason:", value=mod_reason)
         await try_display_confirmation(ctx, conf_embed)
@@ -52,7 +52,7 @@ class Moderation(commands.Cog):
         await ctx.guild.unban(user)
 
         conf_embed = make_embed(ctx,
-                                title=f"{config.bot_name}'s Mercy",
+                                title=f"{config.bot_name()}'s Mercy",
                                 descr=f"<@{user_id}> has been unbanned from the server.")
         await try_display_confirmation(ctx, conf_embed)
 

@@ -11,17 +11,17 @@ def load_config():
 
 
 configs = load_config()
-bot_token = configs['credentials']['bot_token']
 
-bot_name = configs['customizations']['bot_name']
-bot_activity = configs['customizations']['bot_activity']
-embed_footer = configs['customizations']['embed_footer']
 
-command_prefix = configs['settings']['command_prefix']
-display_confirmation = configs.getboolean('settings', 'display_confirmation')
-delete_confirmation = configs.getboolean('settings', 'delete_confirmation')
-wait_time = configs.getint('settings', 'seconds_before_deleting_confirmation')
-reply = configs.getboolean('settings', 'reply')
-mention_author = configs.getboolean('settings', 'mention_author')
-delete_invocation = configs.getboolean('settings', 'delete_invocation')
-ephemeral = configs.getboolean('settings', 'ephemeral')
+def bot_token(): return configs.get('credentials', 'bot_token')
+def bot_name(): return configs.get('customizations', 'bot_name')
+def bot_activity(): return configs.get('customizations', 'bot_activity')
+def embed_footer(): return configs.get('customizations', 'embed_footer')
+def command_prefix(): return configs.get('settings', 'command_prefix')
+def display_confirmation(): return configs.getboolean('settings', 'display_confirmation')
+def delete_confirmation(): return configs.getboolean('settings', 'delete_confirmation')
+def wait_time(): return configs.getint('settings', 'seconds_before_deleting_confirmation')
+def reply(): return configs.getboolean('settings', 'reply')
+def mention_author(): return configs.getboolean('settings', 'mention_author')
+def delete_invocation(): return configs.getboolean('settings', 'delete_invocation')
+def ephemeral(): return configs.getboolean('settings', 'ephemeral')

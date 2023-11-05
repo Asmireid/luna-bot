@@ -17,7 +17,7 @@ async def set_helper(ctx, section, option, value: str):
         config.configs.write(f)     # overwrite old file with new value(s)
 
     conf_embed = make_embed(ctx,
-                            title=f"{config.configs.get('customizations', 'bot_name')}'s State",
+                            title=f"{config.bot_name()}'s State",
                             descr=f"{option} is updated.")
     conf_embed.add_field(name="Old -> New", value=f"{old_value} -> {value}")
     await try_display_confirmation(ctx, conf_embed)
@@ -69,7 +69,7 @@ class SetConfig(commands.Cog):
         if set_function is not None:
             await set_function(ctx, value)
         else:
-            await try_display_confirmation(ctx, f"{option} is an invalid option...")
+            await try_display_confirmation(ctx, f"{option} is not a valid option...")
 
 
 async def setup(bot):

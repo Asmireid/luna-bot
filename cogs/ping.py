@@ -11,16 +11,19 @@ class Ping(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        latency = round(self.bot.latency * 1000)
-        msg_embed = make_embed(ctx,
-                               title=f"{config.bot_name}'s Clock",
-                               descr=f"Current latency is {latency} ms.")
-        await try_reply(ctx, msg_embed)
+        try:
+            latency = round(self.bot.latency * 1000)
+            msg_embed = make_embed(ctx,
+                                   title=f"{config.bot_name()}'s Clock",
+                                   descr=f"Current latency is {latency} ms.")
+            await try_reply(ctx, msg_embed)
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     @commands.command()
     async def genshin(self, ctx):
         msg_embed = make_embed(ctx,
-                               title=f"{config.bot_name}'s Comment",
+                               title=f"{config.bot_name()}'s Comment",
                                descr="原神怎么你了 🤬")
         await try_reply(ctx, msg_embed)
 
