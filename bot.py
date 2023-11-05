@@ -3,11 +3,10 @@ import asyncio
 
 import discord
 from discord.ext import commands
-from config import config
-from cogs import set_config
+from config.config import Config
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=config.command_prefix(), intents=intents)
+bot = commands.Bot(command_prefix=Config().command_prefix, intents=intents)
 # bot.remove_command('help')
 
 
@@ -15,9 +14,9 @@ async def update():
     for guild in bot.guilds:
         server = bot.get_guild(guild.id)
         bot_member = server.get_member(bot.user.id)
-        await bot_member.edit(nick=config.bot_name())
+        await bot_member.edit(nick=Config().bot_name)
 
-    activity = config.bot_activity()
+    activity = Config().bot_activity
     await bot.change_presence(activity=discord.CustomActivity(name=activity))
 
 
@@ -36,7 +35,7 @@ async def load():
 async def main():
     async with bot:
         await load()
-        await bot.start(config.bot_token())
+        await bot.start(Config().bot_token)
 
 
 asyncio.run(main())

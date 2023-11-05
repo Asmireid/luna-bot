@@ -14,7 +14,7 @@ class Ping(commands.Cog):
         try:
             latency = round(self.bot.latency * 1000)
             msg_embed = make_embed(ctx,
-                                   title=f"{config.bot_name()}'s Clock",
+                                   title=f"{Config().bot_name}'s Clock",
                                    descr=f"Current latency is {latency} ms.")
             await try_reply(ctx, msg_embed)
         except Exception as e:

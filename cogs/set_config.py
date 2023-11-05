@@ -1,43 +1,53 @@
-import codecs
-import configparser
-import json
-
 from utilities import *
 
 
-async def set_helper(ctx, section, option, value: str):
-    old_value = config.configs.get(section, option)    # extract old option's value before updating file
+async def set_helper(ctx, option, value: str):
+    configs = Config()
 
-    config.configs.set(section, option, value)
-    with codecs.open('config/config.ini', 'w', encoding='utf-8') as f:
-        config.configs.write(f)     # overwrite old file with new value(s)
+    # Check if the specified option exists as an attribute of the Config instance
+    if hasattr(configs, option):
+        # Use getattr() to dynamically access the attribute based on the option string
+        old_value = getattr(configs, option)
+        # Modify the attribute with the new value
+        setattr(configs, option, value)
 
-    conf_embed = make_embed(ctx,
-                            title=f"{config.bot_name()}'s State",
-                            descr=f"{option} is updated.")
-    conf_embed.add_field(name="Old -> New", value=f"{old_value} -> {value}")
-    await try_display_confirmation(ctx, conf_embed)
+        conf_embed = make_embed(ctx,
+                                title=f"{configs.bot_name}'s State",
+                                descr=f"{option} is updated.")
+        conf_embed.add_field(name="Old -> New", value=f"{old_value} -> {value}")
+        await try_display_confirmation(ctx, conf_embed)
+
+    else:
+        await try_reply(ctx, f"{option} is not a valid option...")
+    
+    # old_value = config.configs.get(section, option)    # extract old option's value before updating file
+    #
+    # config.configs.set(section, option, value)
+    # with codecs.open('config/config.ini', 'w', encoding='utf-8') as f:
+    #     config.configs.write(f)     # overwrite old file with new value(s)
+    #
+    # conf_embed = make_embed(ctx,
+    #                         title=f"{config.bot_name()}'s State",
+    #                         descr=f"{option} is updated.")
+    # conf_embed.add_field(name="Old -> New", value=f"{old_value} -> {value}")
+    # await try_display_confirmation(ctx, conf_embed)
 
 
 async def command_prefix(ctx, value):
     ctx.bot.command_prefix = value
-    await set_helper(ctx, 'settings', 'command_prefix', value)
+    await set_helper(ctx, 'command_prefix', value)
 
 
 async def bot_name(ctx, value):
     server = ctx.bot.get_guild(ctx.guild.id)
     bot_member = server.get_member(ctx.bot.user.id)
     await bot_member.edit(nick=value)
-    await set_helper(ctx, 'customizations', 'bot_name', value)
+    await set_helper(ctx, 'bot_name', value)
 
 
 async def bot_activity(ctx, value):
     await ctx.bot.change_presence(activity=discord.CustomActivity(name=value))
-    await set_helper(ctx, 'customizations', 'bot_activity', value)
-
-
-async def embed_footer(ctx, value):
-    await set_helper(ctx, 'customizations', 'embed_footer', value)
+    await set_helper(ctx, 'bot_activity', value)
 
 
 class SetConfig(commands.Cog):
@@ -53,9 +63,8 @@ class SetConfig(commands.Cog):
         switch_options = {
             'activity': bot_activity,
             'act': bot_activity,
+            'bot_name': bot_name,
             'name': bot_name,
-            'embed_footer': embed_footer,
-            'footer': embed_footer,
             'command_prefix': command_prefix,
             'prefix': command_prefix
         }
@@ -65,7 +74,7 @@ class SetConfig(commands.Cog):
         if set_function is not None:
             await set_function(ctx, value)
         else:
-            await try_display_confirmation(ctx, f"{option} is not a valid option...")
+            await set_helper(ctx, option, value)
 
 
 async def setup(bot):

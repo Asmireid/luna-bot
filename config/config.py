@@ -1,27 +1,171 @@
-import codecs
 import configparser
 
 
-def load_config():
-    # Read the configuration file
-    with codecs.open('config/config.ini', 'r', encoding='utf-8') as f:
-        configurations = configparser.ConfigParser()
-        configurations.read_file(f)
-    return configurations
+# def load_config():
+#     # Read the configuration file
+#     with codecs.open('config/config.ini', 'r', encoding='utf-8') as f:
+#         configurations = configparser.ConfigParser()
+#         configurations.read_file(f)
+#     return configurations
 
 
-configs = load_config()
+class Config:
+    def __init__(self, config_file='config/config.ini'):
+        self.config_file = config_file
+        self.config = self.load_config()
+
+    def load_config(self):
+        config = configparser.ConfigParser()
+        config.read(self.config_file, encoding='utf-8')
+        return config
+
+    def save_config(self):
+        with open(self.config_file, 'w', encoding='utf-8') as configfile:
+            self.config.write(configfile)
+
+    @property
+    def bot_token(self):
+        return self.config.get('credentials', 'bot_token')
+
+    @bot_token.setter
+    def bot_token(self, value):
+        self.config.set('credentials', 'bot_token', value)
+        self.save_config()
+
+    @property
+    def bot_name(self):
+        return self.config.get('customizations', 'bot_name')
+
+    @bot_name.setter
+    def bot_name(self, value):
+        self.config.set('customizations', 'bot_name', value)
+        self.save_config()
+
+    @property
+    def bot_activity(self):
+        return self.config.get('customizations', 'bot_activity')
+
+    @bot_activity.setter
+    def bot_activity(self, value):
+        self.config.set('customizations', 'bot_activity', value)
+        self.save_config()
+
+    @property
+    def footer(self):
+        return self.config.get('customizations', 'embed_footer')
+
+    @footer.setter
+    def footer(self, value):
+        self.config.set('customizations', 'embed_footer', value)
+        self.save_config()
+
+    @property
+    def command_prefix(self):
+        return self.config.get('settings', 'command_prefix')
+
+    @command_prefix.setter
+    def command_prefix(self, value):
+        self.config.set('settings', 'command_prefix', value)
+        self.save_config()
+
+    @property
+    def display_confirmation(self):
+        return self.config.getboolean('settings', 'display_confirmation')
+
+    @display_confirmation.setter
+    def display_confirmation(self, value):
+        self.config.set('settings', 'display_confirmation', value)
+        self.save_config()
+
+    @property
+    def delete_confirmation(self):
+        return self.config.getboolean('settings', 'delete_confirmation')
+
+    @delete_confirmation.setter
+    def delete_confirmation(self, value):
+        self.config.set('settings', 'delete_confirmation', value)
+        self.save_config()
+
+    @property
+    def wait_time(self):
+        return self.config.getint('settings', 'seconds_before_deleting_confirmation')
+
+    @wait_time.setter
+    def wait_time(self, value):
+        self.config.set('settings', 'seconds_before_deleting_confirmation', value)
+        self.save_config()
+
+    @property
+    def reply(self):
+        return self.config.getboolean('settings', 'reply')
+
+    @reply.setter
+    def reply(self, value):
+        self.config.set('settings', 'reply', value)
+        self.save_config()
+
+    @property
+    def mention_author(self):
+        return self.config.getboolean('settings', 'mention_author')
+
+    @mention_author.setter
+    def mention_author(self, value):
+        self.config.set('settings', 'mention_author', value)
+        self.save_config()
+
+    @property
+    def delete_invocation(self):
+        return self.config.getboolean('settings', 'delete_invocation')
+
+    @delete_invocation.setter
+    def delete_invocation(self, value):
+        self.config.set('settings', 'delete_invocation', value)
+        self.save_config()
+
+    @property
+    def ephemeral(self):
+        return self.config.getboolean('settings', 'ephemeral')
+
+    @ephemeral.setter
+    def ephemeral(self, value):
+        self.config.set('settings', 'ephemeral', value)
+        self.save_config()
 
 
-def bot_token(): return configs.get('credentials', 'bot_token')
-def bot_name(): return configs.get('customizations', 'bot_name')
-def bot_activity(): return configs.get('customizations', 'bot_activity')
-def embed_footer(): return configs.get('customizations', 'embed_footer')
-def command_prefix(): return configs.get('settings', 'command_prefix')
-def display_confirmation(): return configs.getboolean('settings', 'display_confirmation')
-def delete_confirmation(): return configs.getboolean('settings', 'delete_confirmation')
-def wait_time(): return configs.getint('settings', 'seconds_before_deleting_confirmation')
-def reply(): return configs.getboolean('settings', 'reply')
-def mention_author(): return configs.getboolean('settings', 'mention_author')
-def delete_invocation(): return configs.getboolean('settings', 'delete_invocation')
-def ephemeral(): return configs.getboolean('settings', 'ephemeral')
+# configs = Config('config/config.ini')
+#
+#
+# def bot_token(): return configs.get('credentials', 'bot_token')
+#
+#
+# def bot_name(): return configs.get('customizations', 'bot_name')
+#
+#
+# def bot_activity(): return configs.get('customizations', 'bot_activity')
+#
+#
+# def embed_footer(): return configs.get('customizations', 'embed_footer')
+#
+#
+# def command_prefix(): return configs.get('settings', 'command_prefix')
+#
+#
+# def display_confirmation(): return configs.getboolean('settings', 'display_confirmation')
+#
+#
+# def delete_confirmation(): return configs.getboolean('settings', 'delete_confirmation')
+#
+#
+# def wait_time(): return configs.getint('settings', 'seconds_before_deleting_confirmation')
+#
+#
+# def reply(): return configs.getboolean('settings', 'reply')
+#
+#
+# def mention_author(): return configs.getboolean('settings', 'mention_author')
+#
+#
+# def delete_invocation(): return configs.getboolean('settings', 'delete_invocation')
+#
+#
+# def ephemeral(): return configs.getboolean('settings', 'ephemeral')
