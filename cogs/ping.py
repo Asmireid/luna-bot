@@ -20,13 +20,6 @@ class Ping(commands.Cog):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    @commands.command()
-    async def genshin(self, ctx):
-        msg_embed = make_embed(ctx,
-                               title=f"{config.bot_name()}'s Comment",
-                               descr="原神怎么你了 🤬")
-        await try_reply(ctx, msg_embed)
-
 
 async def setup(bot):
     await bot.add_cog(Ping(bot))

@@ -15,6 +15,17 @@ class Randomization(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
+    @commands.command(aliases=['原神', '原'])
+    async def genshin(self, ctx):
+        responses = ['原神怎么你了 🤬', '原批4000+ 🤗']
+        response = random.choice(responses)
+
+        msg_embed = make_embed(ctx,
+                               title=f"{config.bot_name()}'s Comment",
+                               descr=response)
+
+        await try_reply(ctx, msg_embed)
+
     @commands.command(aliases=['8ball', 'eightball'])
     async def magic_eightball(self, ctx, *, question):
         try:
@@ -68,7 +79,7 @@ class Randomization(commands.Cog):
                 question, answer = joke.strip().split('<>')
 
             msg_embed = make_embed(ctx,
-                                   title=f"{config.configs.get('customizations', 'bot_name')}'s Joke",
+                                   title=f"{config.bot_name()}'s Joke",
                                    descr=question)
             msg_embed.add_field(name="", value=answer, inline=True)
 
@@ -78,6 +89,34 @@ class Randomization(commands.Cog):
             print("File not found. Make sure the file path is correct.")
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    @commands.command()
+    async def add_joke(self, ctx, *, joke):
+        try:
+            joke_parts = joke.split('|')
+            set_up, punchline = joke_parts[0].strip(), joke_parts[1].strip()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            await try_reply(ctx, "Please separate set-up and punchline by '|'.")
+            return
+        # print(f"set-up: {set_up} | punchline: {punchline}")
+
+        joined_joke = set_up + "<>" + punchline + "\n"
+
+        try:
+            with open("cogs/jokes.txt", "a", encoding='utf-8') as f:
+                f.write(joined_joke)
+        except FileNotFoundError:
+            print("File not found. Make sure the file path is correct.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        msg_embed = make_embed(ctx,
+                               title=f"{config.bot_name()}'s Joke",
+                               descr="You taught me a new joke.")
+        msg_embed.add_field(name=set_up, value=punchline, inline=True)
+
+        await try_display_confirmation(ctx, msg_embed)
 
 
 async def setup(bot):
