@@ -10,16 +10,17 @@ def get_status():
 
 
 async def set_helper(ctx, section, option, value: str):
-    conf_embed = make_embed(ctx,
-                            title=f"{config.configs.get('customizations', 'bot_name')}'s State",
-                            descr=f"{option} is updated.")
-    old_op = config.configs.get(section, option)
-    conf_embed.add_field(name="Old -> New", value=f"{old_op} -> {value}")
-    await try_display_confirmation(ctx, conf_embed)
+    old_value = config.configs.get(section, option)    # extract old option's value before updating file
 
     config.configs.set(section, option, value)
     with codecs.open('config/config.ini', 'w', encoding='utf-8') as f:
-        config.configs.write(f)
+        config.configs.write(f)     # overwrite old file with new value(s)
+
+    conf_embed = make_embed(ctx,
+                            title=f"{config.configs.get('customizations', 'bot_name')}'s State",
+                            descr=f"{option} is updated.")
+    conf_embed.add_field(name="Old -> New", value=f"{old_value} -> {value}")
+    await try_display_confirmation(ctx, conf_embed)
 
 
 async def command_prefix(ctx, value):
@@ -39,6 +40,10 @@ async def bot_status(ctx, value):
     await set_helper(ctx, 'customizations', 'bot_status', value)
 
 
+async def embed_footer(ctx, value):
+    await set_helper(ctx, 'customizations', 'embed_footer', value)
+
+
 class SetConfig(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,6 +57,8 @@ class SetConfig(commands.Cog):
         switch_options = {
             'status': bot_status,
             'name': bot_name,
+            'embed_footer': embed_footer,
+            'footer': embed_footer,
             'command_prefix': command_prefix,
             'prefix': command_prefix
         }

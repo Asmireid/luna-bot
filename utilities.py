@@ -21,10 +21,12 @@ async def try_reply(ctx, msg):
     if isinstance(msg, discord.Embed):
         return await ctx.reply(embed=msg,
                                mention_author=config.mention_author,
-                               ephemeral=config.ephemeral) if config.reply else await ctx.send(embed=msg)
+                               ephemeral=config.ephemeral) if config.reply else await ctx.send(embed=msg,
+                                                                                               ephemeral=config.ephemeral)
     return await ctx.reply(msg,
                            mention_author=config.mention_author,
-                           ephemeral=config.ephemeral) if config.reply else await ctx.send(msg)
+                           ephemeral=config.ephemeral) if config.reply else await ctx.send(msg,
+                                                                                           ephemeral=config.ephemeral)
 
 
 async def try_display_confirmation(ctx, msg):
@@ -39,6 +41,6 @@ def make_embed(ctx, title, descr, color=discord.Color.dark_embed()) -> discord.E
                               color=color)
     msg_embed.set_author(name=f"Requested by {ctx.author.nick or ctx.author.name}",
                          icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-    msg_embed.set_footer(text=config.embed_footer)
+    msg_embed.set_footer(text=config.configs.get('customizations', 'embed_footer'))
 
     return msg_embed
