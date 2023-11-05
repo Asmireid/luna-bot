@@ -12,7 +12,10 @@ class Ping(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         latency = round(self.bot.latency * 1000)
-        await try_reply(ctx, f"Current latency is {latency} ms.")
+        msg_embed = make_embed(ctx,
+                               title=f"{config.bot_name}'s Clock",
+                               descr=f"Current latency is {latency} ms.")
+        await try_reply(ctx, msg_embed)
 
 
 async def setup(bot):

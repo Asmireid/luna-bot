@@ -10,8 +10,12 @@ def get_status():
 
 
 async def set_helper(ctx, section, option, value: str):
-    await try_display_confirmation(ctx,
-                                   f"{config.configs.get('customizations', 'bot_name')}'s new {option} is: {value}.")
+    conf_embed = make_embed(ctx,
+                            title=f"{config.configs.get('customizations', 'bot_name')}'s State",
+                            descr=f"{option} is updated.")
+    old_op = config.configs.get(section, option)
+    conf_embed.add_field(name="Old -> New", value=f"{old_op} -> {value}")
+    await try_display_confirmation(ctx, conf_embed)
 
     config.configs.set(section, option, value)
     with codecs.open('config/config.ini', 'w', encoding='utf-8') as f:
