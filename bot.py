@@ -17,8 +17,8 @@ async def update():
         bot_member = server.get_member(bot.user.id)
         await bot_member.edit(nick=config.bot_name())
 
-    status = set_config.get_status()
-    await bot.change_presence(activity=discord.CustomActivity(name=status))
+    activity = config.bot_activity()
+    await bot.change_presence(activity=discord.CustomActivity(name=activity))
 
 
 @bot.event

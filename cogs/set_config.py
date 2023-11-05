@@ -5,10 +5,6 @@ import json
 from utilities import *
 
 
-def get_status():
-    return config.bot_activity
-
-
 async def set_helper(ctx, section, option, value: str):
     old_value = config.configs.get(section, option)    # extract old option's value before updating file
 
