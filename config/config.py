@@ -14,7 +14,7 @@ configs = load_config()
 bot_token = configs['credentials']['bot_token']
 
 bot_name = configs['customizations']['bot_name']
-bot_status = configs['customizations']['bot_status']
+bot_activity = configs['customizations']['bot_activity']
 embed_footer = configs['customizations']['embed_footer']
 
 command_prefix = configs['settings']['command_prefix']

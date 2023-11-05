@@ -6,7 +6,7 @@ from utilities import *
 
 
 def get_status():
-    return config.bot_status
+    return config.bot_activity
 
 
 async def set_helper(ctx, section, option, value: str):
@@ -35,9 +35,9 @@ async def bot_name(ctx, value):
     await set_helper(ctx, 'customizations', 'bot_name', value)
 
 
-async def bot_status(ctx, value):
+async def bot_activity(ctx, value):
     await ctx.bot.change_presence(activity=discord.CustomActivity(name=value))
-    await set_helper(ctx, 'customizations', 'bot_status', value)
+    await set_helper(ctx, 'customizations', 'bot_activity', value)
 
 
 async def embed_footer(ctx, value):
@@ -55,7 +55,8 @@ class SetConfig(commands.Cog):
     @commands.command()
     async def set(self, ctx, option, *, value: str):
         switch_options = {
-            'status': bot_status,
+            'activity': bot_activity,
+            'act': bot_activity,
             'name': bot_name,
             'embed_footer': embed_footer,
             'footer': embed_footer,

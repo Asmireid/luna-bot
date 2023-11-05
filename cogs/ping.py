@@ -17,6 +17,13 @@ class Ping(commands.Cog):
                                descr=f"Current latency is {latency} ms.")
         await try_reply(ctx, msg_embed)
 
+    @commands.command()
+    async def genshin(self, ctx):
+        msg_embed = make_embed(ctx,
+                               title=f"{config.bot_name}'s Comment",
+                               descr="原神怎么你了 🤬")
+        await try_reply(ctx, msg_embed)
+
 
 async def setup(bot):
     await bot.add_cog(Ping(bot))
