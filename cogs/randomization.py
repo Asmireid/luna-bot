@@ -21,7 +21,7 @@ class Randomization(commands.Cog):
         response = random.choice(responses)
 
         msg_embed = make_embed(ctx,
-                               title=f"{config.bot_name()}'s Comment",
+                               title=f"{Config().bot_name}'s Comment",
                                descr=response)
 
         await try_reply(ctx, msg_embed)
@@ -34,7 +34,7 @@ class Randomization(commands.Cog):
                 response = random.choice(responses)
 
             msg_embed = make_embed(ctx,
-                                   title=f"{config.bot_name()}'s Magic 8 Ball",
+                                   title=f"{Config().bot_name}'s Magic 8 Ball",
                                    descr=question)
             msg_embed.set_thumbnail(url="https://static.thenounproject.com/png/371802-200.png")
             msg_embed.add_field(name="Ball's Insight: ", value=response, inline=True)
@@ -62,7 +62,7 @@ class Randomization(commands.Cog):
         rolls = [random.randint(1, sides) for _ in range(count)]
 
         msg_embed = make_embed(ctx,
-                               title=f"{config.bot_name()}'s Dice",
+                               title=f"{Config().bot_name}'s Dice",
                                descr=f"{count}d{sides}+{offset}")
         msg_embed.description = '\n'.join((f"#{i + 1}: **{roll}**" for i, roll in enumerate(rolls)))
         msg_embed.add_field(name='sum', value=f'total = {sum(rolls)} + {offset} = {sum(rolls) + offset}', inline=True)
@@ -79,7 +79,7 @@ class Randomization(commands.Cog):
                 question, answer = joke.strip().split('<>')
 
             msg_embed = make_embed(ctx,
-                                   title=f"{config.bot_name()}'s Joke",
+                                   title=f"{Config().bot_name}'s Joke",
                                    descr=question)
             msg_embed.add_field(name="", value=answer, inline=True)
 
@@ -112,7 +112,7 @@ class Randomization(commands.Cog):
             print(f"An error occurred: {e}")
 
         msg_embed = make_embed(ctx,
-                               title=f"{config.bot_name()}'s Joke",
+                               title=f"{Config().bot_name}'s Joke",
                                descr="You taught me a new joke.")
         msg_embed.add_field(name=set_up, value=punchline, inline=True)
 
