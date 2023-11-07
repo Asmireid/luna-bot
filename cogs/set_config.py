@@ -24,18 +24,6 @@ async def set_helper(ctx, option, value: str):
     else:
         await try_reply(ctx, f"{option} is not a valid option...")
 
-    # old_value = config.configs.get(section, option)    # extract old option's value before updating file
-    #
-    # config.configs.set(section, option, value)
-    # with codecs.open('config/config.ini', 'w', encoding='utf-8') as f:
-    #     config.configs.write(f)     # overwrite old file with new value(s)
-    #
-    # conf_embed = make_embed(ctx,
-    #                         title=f"{config.bot_name()}'s State",
-    #                         descr=f"{option} is updated.")
-    # conf_embed.add_field(name="Old -> New", value=f"{old_value} -> {value}")
-    # await try_display_confirmation(ctx, conf_embed)
-
 
 async def command_prefix(ctx, value):
     ctx.bot.command_prefix = value
