@@ -1,10 +1,10 @@
+import os
 import random
 import re
-import requests
-import json
+
+from discord.ext import commands
 
 from utilities import *
-from config import config
 
 
 class Randomization(commands.Cog):
@@ -15,7 +15,11 @@ class Randomization(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(aliases=['原神', '原'])
+    @commands.command(aliases=['原神', '原'],
+                      help=f"returns superposition state of genshin: " +
+                           f"{Config().command_prefix}genshin / " +
+                           f"{Config().command_prefix}原神 / " +
+                           f"{Config().command_prefix}原")
     async def genshin(self, ctx):
         responses = ['原神怎么你了 🤬', '原批4000+ 🤗']
         response = random.choice(responses)
@@ -26,7 +30,11 @@ class Randomization(commands.Cog):
 
         await try_reply(ctx, msg_embed)
 
-    @commands.command(aliases=['8ball', 'eightball'])
+    @commands.command(aliases=['8ball', 'eightball'],
+                      help="answers the question through Magic 8 Ball: " +
+                           f"{Config().command_prefix}magic_eightball / " +
+                           f"{Config().command_prefix}8ball / " +
+                           f"{Config().command_prefix}eightball example_question")
     async def magic_eightball(self, ctx, *, question):
         try:
             with open("cogs/magic8ball_responses.txt", "r") as f:
@@ -46,7 +54,9 @@ class Randomization(commands.Cog):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    @commands.command(aliases=['r', 'dice', 'd'])
+    @commands.command(aliases=['r', 'dice', 'd'],
+                      help="rolls a y-sided dice x times plus offset z: " +
+                           f"{Config().command_prefix}r xdy+z / xdy / x")
     async def roll(self, ctx, *, cmd: str):
         parts = re.split(r"[d+]+", cmd)
         try:
@@ -69,7 +79,7 @@ class Randomization(commands.Cog):
 
         await try_reply(ctx, msg_embed)
 
-    @commands.command()
+    @commands.command(help=f"returns a random joke: {Config().command_prefix}joke")
     async def joke(self, ctx):
         try:
             with open("cogs/jokes.txt", "r", encoding='utf-8') as f:
@@ -90,7 +100,8 @@ class Randomization(commands.Cog):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    @commands.command()
+    @commands.command(help="adds an input joke to the list of jokes: " +
+                           f"{Config().command_prefix}add_joke example_set_up | example_punchline")
     async def add_joke(self, ctx, *, joke):
         try:
             joke_parts = joke.split('|')

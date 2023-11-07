@@ -1,3 +1,7 @@
+import os
+
+from discord.ext import commands
+
 from utilities import *
 
 
@@ -9,11 +13,12 @@ class Moderation(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command()
+    @commands.command(help=f"deletes x messages from the current channel: {Config().command_prefix}clear x")
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, count: int):
         def is_not_command_message(message):
             return message.id != ctx.message.id
+
         # +1 accounts for the clear command itself
         await ctx.channel.purge(limit=count + 1, check=is_not_command_message)
 
@@ -22,7 +27,7 @@ class Moderation(commands.Cog):
                                 descr=f"{count} message(s) cleared.")
         await try_display_confirmation(ctx, conf_embed)
 
-    @commands.command()
+    @commands.command(help=f"kicks an user from server: {Config().command_prefix}kick @member reason")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, mod_reason):
         await ctx.guild.kick(member)
@@ -33,7 +38,7 @@ class Moderation(commands.Cog):
         conf_embed.add_field(name="Reason:", value=mod_reason)
         await try_display_confirmation(ctx, conf_embed)
 
-    @commands.command()
+    @commands.command(help=f"bans an user from server: {Config().command_prefix}ban @member reason")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, mod_reason):
         await ctx.guild.ban(member)
@@ -44,7 +49,7 @@ class Moderation(commands.Cog):
         conf_embed.add_field(name="Reason:", value=mod_reason)
         await try_display_confirmation(ctx, conf_embed)
 
-    @commands.command(name="unban")
+    @commands.command(help=f"unbans an user from server: {Config().command_prefix}unban user_id")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, user_id):

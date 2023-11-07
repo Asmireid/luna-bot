@@ -1,7 +1,10 @@
-from utilities import *
-import requests
 import json
+import os
 
+import requests
+from discord.ext import commands
+
+from utilities import *
 
 url = 'http://localhost:5001/api/v1/generate'
 headers = {
@@ -25,7 +28,7 @@ class Chat(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command()
+    @commands.command(help=f"chats with user: {Config().command_prefix}chat example_text")
     async def chat(self, ctx, *, question):
         try:
             # Clean input

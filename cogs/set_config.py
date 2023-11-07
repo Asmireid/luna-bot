@@ -1,3 +1,7 @@
+import os
+
+from discord.ext import commands
+
 from utilities import *
 
 
@@ -19,7 +23,7 @@ async def set_helper(ctx, option, value: str):
 
     else:
         await try_reply(ctx, f"{option} is not a valid option...")
-    
+
     # old_value = config.configs.get(section, option)    # extract old option's value before updating file
     #
     # config.configs.set(section, option, value)
@@ -58,7 +62,7 @@ class SetConfig(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command()
+    @commands.command(help=f"sets config.ini attributes: {Config().command_prefix}set example_attr new_value")
     async def set(self, ctx, option, *, value: str):
         switch_options = {
             'activity': bot_activity,
