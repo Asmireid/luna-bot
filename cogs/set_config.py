@@ -26,7 +26,7 @@ async def set_helper(ctx, option, value: str):
 
 
 async def command_prefix(ctx, value):
-    ctx.bot.command_prefix = value
+    ctx.bot.command_prefix = value.split(' ')
     await set_helper(ctx, 'command_prefix', value)
 
 

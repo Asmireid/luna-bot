@@ -1,12 +1,15 @@
-import os
 import asyncio
+import os
 
 import discord
 from discord.ext import commands
+
 from config.config import Config
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=Config().command_prefix, intents=intents)
+bot = commands.Bot(command_prefix=Config().command_prefix.split(' '), intents=intents)
+
+
 # bot.remove_command('help')
 
 
