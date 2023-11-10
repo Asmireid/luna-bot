@@ -1,5 +1,6 @@
 import os
 import numexpr
+import re
 from discord.ext import commands
 from numpy import *
 from utilities import *
@@ -20,6 +21,7 @@ class Calc(commands.Cog):
     async def calculator(self, ctx, *, expression):
         try:
             answer = numexpr.evaluate(expression)
+
             msg_embed = make_embed(ctx,
                                    title=f"{Config().bot_name}'s Calculator",
                                    descr=f"{expression} = {answer}")
