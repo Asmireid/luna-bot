@@ -1,9 +1,9 @@
 import asyncio
 import os
-
 import discord
+import time
+import platform
 from discord.ext import commands
-
 from config.config import Config
 
 intents = discord.Intents.all()
@@ -25,7 +25,11 @@ async def update():
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user.name}.")
+    time_prefix = time.strftime('%H:%M:%S', time.localtime())
+    print(f"{time_prefix} Logged in as {bot.user.name}")
+    print(f"{time_prefix} Bot ID {bot.user.id}")
+    print(f"{time_prefix} Discord.py Version {discord.__version__}")
+    print(f"{time_prefix} Python Version {platform.python_version()}")
     await update()
 
 
