@@ -20,10 +20,12 @@ class Moderation(commands.Cog):
                            f"{Config().command_prefix}查成分 " +
                            "@user / no parameter")
     async def userinfo(self, ctx, member: discord.Member = None):
-        if member is None:
-            member = ctx.message.author
-        roles = [role for role in member.roles]
         try:
+            if member is None:
+                member = ctx.message.author
+
+            roles = [role for role in member.roles]
+
             msg_embed = make_embed(ctx,
                                    title=f"{Config().bot_name}'s Inspection",
                                    descr=f"User info on {member.mention}")
@@ -32,11 +34,34 @@ class Moderation(commands.Cog):
             msg_embed.add_field(name='Name', value=member.name)
             msg_embed.add_field(name='Nickname', value=member.display_name)
             msg_embed.add_field(name='Status', value=member.status)
-            msg_embed.add_field(name='Created At', value=member.joined_at.strftime("%Y-%m-%d %H:%M:%S"))
-            msg_embed.add_field(name='Joined At', value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+            msg_embed.add_field(name='Created At', value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+            msg_embed.add_field(name='Joined At', value=member.joined_at.strftime("%Y-%m-%d %H:%M:%S"))
             msg_embed.add_field(name=f'Roles ({len(roles)})', value=' '.join([role.mention for role in roles]))
             msg_embed.add_field(name='Top Role', value=member.top_role.mention)
             msg_embed.add_field(name='Bot?', value=member.bot)
+
+            await try_reply(ctx, msg_embed)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    @commands.command(help=f"returns info about current server: {Config().command_prefix}serverinfo")
+    async def serverinfo(self, ctx):
+        try:
+            server = ctx.guild
+            roles = [role for role in server.roles]
+
+            msg_embed = make_embed(ctx,
+                                   title=f"{Config().bot_name}'s Inspection",
+                                   descr=f"Server info on {server.name}")
+            msg_embed.set_thumbnail(url=server.icon)
+            msg_embed.add_field(name='ID', value=server.id)
+            msg_embed.add_field(name='Members', value=server.member_count)
+            msg_embed.add_field(name='Channels',
+                                value=f"{len(server.text_channels)} text | {len(server.voice_channels)} voice")
+            msg_embed.add_field(name='Owner', value=server.owner.mention)
+            msg_embed.add_field(name='Description', value=server.description)
+            msg_embed.add_field(name='Created At', value=server.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+            msg_embed.add_field(name=f'Roles ({len(roles)})', value=' '.join([role.mention for role in roles]))
             await try_reply(ctx, msg_embed)
         except Exception as e:
             print(f"An error occurred: {e}")
