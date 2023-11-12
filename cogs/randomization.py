@@ -30,6 +30,21 @@ class Randomization(commands.Cog):
 
         await try_reply(ctx, msg_embed)
 
+    @commands.command(aliases=['c', 'choice'],
+                      help=f"chooses one between inputs: " +
+                           f"{Config().command_prefix}choose / " +
+                           f"{Config().command_prefix}choice / " +
+                           f"{Config().command_prefix}c a1 | a2 | ...")
+    async def choose(self, ctx, *, choices):
+        choices = choices.split('|')
+        choice = random.choice(choices).strip()
+
+        msg_embed = make_embed(ctx,
+                               title=f"{Config().bot_name}'s Choice",
+                               descr=choice)
+
+        await try_reply(ctx, msg_embed)
+
     @commands.command(aliases=['8ball', 'eightball'],
                       help="answers the question through Magic 8 Ball: " +
                            f"{Config().command_prefix}magic_eightball / " +
