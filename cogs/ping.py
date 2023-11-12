@@ -27,7 +27,7 @@ class Ping(commands.Cog):
     @commands.command(help=f"returns the server's current time: {Config().command_prefix}time")
     async def server_time(self, ctx):
         try:
-            server_time = time.strftime('%Y/%m/%d %H:%M:%S', time.localtime())
+            server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             msg_embed = make_embed(ctx,
                                    title=f"{Config().bot_name}'s Clock",
                                    descr=f"Server's current time is {server_time}.")
@@ -38,7 +38,7 @@ class Ping(commands.Cog):
     @commands.command(help=f"returns the current time of user: {Config().command_prefix}time")
     async def time(self, ctx):
         try:
-            user_time = ctx.message.created_at.strftime('%Y/%m/%d %H:%M:%S')
+            user_time = ctx.message.created_at.strftime("%Y-%m-%d %H:%M:%S")
             msg_embed = make_embed(ctx,
                                    title=f"{Config().bot_name}'s Clock",
                                    descr=f"Current GMT time is {user_time}.")

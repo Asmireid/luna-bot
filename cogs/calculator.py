@@ -1,6 +1,5 @@
 import os
 import numexpr
-import re
 from discord.ext import commands
 from numpy import *
 from utilities import *

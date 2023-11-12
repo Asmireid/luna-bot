@@ -1,5 +1,6 @@
 import os
 
+import discord
 from discord.ext import commands
 
 from utilities import *
@@ -12,6 +13,29 @@ class Moderation(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
+
+    @commands.command(aliases=['查成分'])
+    async def userinfo(self, ctx, member: discord.Member = None):
+        if member is None:
+            member = ctx.message.author
+        roles = [role for role in member.roles]
+        try:
+            msg_embed = make_embed(ctx,
+                                   title=f"{Config().bot_name}'s Inspection",
+                                   descr=f"User info on {member.mention}")
+            msg_embed.set_thumbnail(url=member.avatar)
+            msg_embed.add_field(name='ID', value=member.id)
+            msg_embed.add_field(name='Name', value=member.name)
+            msg_embed.add_field(name='Nickname', value=member.display_name)
+            msg_embed.add_field(name='Status', value=member.status)
+            msg_embed.add_field(name='Created At', value=member.joined_at.strftime("%Y-%m-%d %H:%M:%S"))
+            msg_embed.add_field(name='Joined At', value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+            msg_embed.add_field(name=f'Roles ({len(roles)})', value=' '.join([role.mention for role in roles]))
+            msg_embed.add_field(name='Top Role', value=member.top_role.mention)
+            msg_embed.add_field(name='Bot?', value=member.bot)
+            await try_reply(ctx, msg_embed)
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     @commands.command(help=f"deletes x messages from the current channel: {Config().command_prefix}clear x")
     @commands.has_permissions(manage_messages=True)
