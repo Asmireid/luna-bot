@@ -28,7 +28,7 @@ class Chat(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(help=f"chats with user: {Config().command_prefix}chat example_text")
+    @commands.command(help="chats with user")
     async def chat(self, ctx, *, question):
         try:
             # Clean input

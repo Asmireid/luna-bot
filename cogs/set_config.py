@@ -50,7 +50,7 @@ class SetConfig(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(help=f"sets config.ini attributes: {Config().command_prefix}set example_attr new_value")
+    @commands.command(help="sets config.ini attributes")
     async def set(self, ctx, option, *, value: str):
         switch_options = {
             'activity': bot_activity,

@@ -14,10 +14,7 @@ class Calc(commands.Cog):
         print(f"{os.path.basename(__file__)} is ready.")
 
     @commands.command(aliases=['calc', 'math'],
-                      help="makes calculations of input: " +
-                           f"{Config().command_prefix}calculator / " +
-                           f"{Config().command_prefix}calc / " +
-                           f"{Config().command_prefix}math example_expression")
+                      help="makes calculations of input expression")
     async def calculator(self, ctx, *, expression):
         try:
             answer = numexpr.evaluate(expression)
@@ -29,8 +26,7 @@ class Calc(commands.Cog):
         except:
             await try_reply(ctx, f"'{expression}' is not a valid expression...")
 
-    @commands.command(help="represents input integer in different representations: " +
-                           f"{Config().command_prefix}convert example_num")
+    @commands.command(help="represents input integer in different representations")
     async def represent(self, ctx, num):
         try:
             if '0b' in num:
