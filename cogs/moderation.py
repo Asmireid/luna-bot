@@ -14,7 +14,11 @@ class Moderation(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(aliases=['查成分'])
+    @commands.command(aliases=['查成分'],
+                      help="returns info about mentioned user: " +
+                           f"{Config().command_prefix}userinfo / " +
+                           f"{Config().command_prefix}查成分 " +
+                           "@user / no parameter")
     async def userinfo(self, ctx, member: discord.Member = None):
         if member is None:
             member = ctx.message.author
