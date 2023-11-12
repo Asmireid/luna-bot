@@ -13,10 +13,11 @@ class Calc(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(aliases=['calc'],
+    @commands.command(aliases=['calc', 'math'],
                       help="makes calculations of input: " +
                            f"{Config().command_prefix}calculator / " +
-                           f"{Config().command_prefix}calc example_expression")
+                           f"{Config().command_prefix}calc / " +
+                           f"{Config().command_prefix}math example_expression")
     async def calculator(self, ctx, *, expression):
         try:
             answer = numexpr.evaluate(expression)
