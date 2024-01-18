@@ -6,7 +6,7 @@ import requests
 from discord.ext import commands
 
 from novelai_api.ImagePreset import ImageModel, ImagePreset, ImageResolution, UCPreset, ImageSampler
-from Paint.boilerplate import API
+from util.boilerplate import API
 
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, pipeline
 
