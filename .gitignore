@@ -5,5 +5,5 @@
 */__pycache__
 __pycache__
 config/config.ini
-Paint/main.py
-Paint/prompt_gen.py
+util/main.py
+util/prompt_gen.py
