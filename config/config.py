@@ -127,7 +127,7 @@ class Config:
     def uc_preset(self):
         return self.config.get('painting_settings', 'uc_preset')
 
-    @ephemeral.setter
+    @uc_preset.setter
     def uc_preset(self, value):
         self.config.set('painting_settings', 'uc_preset', value)
         self.save_config()
