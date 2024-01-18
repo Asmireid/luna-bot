@@ -122,3 +122,12 @@ class Config:
     def ephemeral(self, value):
         self.config.set('settings', 'ephemeral', value)
         self.save_config()
+
+    @property
+    def uc_preset(self):
+        return self.config.get('painting_settings', 'uc_preset')
+
+    @ephemeral.setter
+    def uc_preset(self, value):
+        self.config.set('painting_settings', 'uc_preset', value)
+        self.save_config()
