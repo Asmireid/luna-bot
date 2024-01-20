@@ -41,25 +41,26 @@ class Paint(commands.Cog):
             return
         painting.is_active = True
 
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
         async with API() as api_handler:
+            configs = Config()
+
             api = api_handler.api
 
             preset = ImagePreset()
-            preset.uc_preset = UCPreset.Preset_Heavy
+            preset.uc_preset = UCPreset(int(getattr(configs, "uc_preset")))
             preset.n_samples = 1
-            preset.sampler = ImageSampler.k_euler
-            preset.uc = "lowres, bad anatomy, bad mouth, bad hands, bad feet, extra limbs, text, error, bad fingers, " \
-                        "missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, " \
-                        "normal quality, jpeg artifacts, signature, watermark, username, blurry, simple background"
-
+            preset.sampler = ImageSampler(getattr(configs, "sampler"))
+            preset.uc = getattr(configs, "uc_base")
             preset.seed = random.randint(1, 9999999999)
-            if random.randint(0, 10) < 5:
-                preset.resolution = ImageResolution.Normal_Portrait_v3
-            else:
-                preset.resolution = ImageResolution.Normal_Landscape_v3
+            preset.resolution = ImageResolution(tuple(map(int, getattr(configs, "resolution").split(', '))))
+            # if random.randint(0, 10) < 5:
+            #     preset.resolution = ImageResolution.Normal_Portrait_v3
+            # else:
+            #     preset.resolution = ImageResolution.Normal_Landscape_v3
+            prompt_prefix = getattr(configs, "prompt_prefix")
 
-            prompt_prefix = "{{{amazing quality, very aesthetic, ultra-detailed character, illustration, painting, " \
-                            "8K UHD Wallpaper, modern day}}}, "
             await try_reply(ctx, "Painting...")
             try:
                 async for _, img in api.high_level.generate_image(prompt_prefix + prompt, ImageModel.Anime_v3, preset):

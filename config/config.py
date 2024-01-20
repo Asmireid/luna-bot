@@ -131,3 +131,48 @@ class Config:
     def uc_preset(self, value):
         self.config.set('painting_settings', 'uc_preset', value)
         self.save_config()
+
+    @property
+    def sampler(self):
+        return self.config.get('painting_settings', 'sampler')
+
+    @sampler.setter
+    def sampler(self, value):
+        self.config.set('painting_settings', 'sampler', value)
+        self.save_config()
+
+    @property
+    def uc_base(self):
+        return self.config.get('painting_settings', 'uc_base')
+
+    @uc_base.setter
+    def uc_base(self, value):
+        self.config.set('painting_settings', 'uc_base', value)
+        self.save_config()
+
+    @property
+    def seed(self):
+        return self.config.getint('painting_settings', 'seed')
+
+    @seed.setter
+    def seed(self, value):
+        self.config.set('painting_settings', 'seed', value)
+        self.save_config()
+
+    @property
+    def resolution(self):
+        return self.config.get('painting_settings', 'resolution')
+
+    @resolution.setter
+    def resolution(self, value):
+        self.config.set('painting_settings', 'resolution', value)
+        self.save_config()
+
+    @property
+    def prompt_prefix(self):
+        return self.config.get('painting_settings', 'resolution')
+
+    @prompt_prefix.setter
+    def prompt_prefix(self, value):
+        self.config.set('painting_settings', 'resolution', value)
+        self.save_config()
