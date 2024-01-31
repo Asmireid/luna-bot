@@ -1,9 +1,7 @@
 import json
 from logging import Logger, StreamHandler
-from os import environ as env
 from typing import Any, Optional
 
-# import dotenv
 from aiohttp import ClientSession
 
 from novelai_api import NovelAIAPI
@@ -38,14 +36,14 @@ class API:
     logger: Logger
     api: Optional[NovelAIAPI]
 
-    def __init__(self, base_address: Optional[str] = None):
+    def __init__(self, username: Optional[str] = None, password: Optional[str] = None, base_address: Optional[str] = None):
         # dotenv.load_dotenv()
 
         # if "NAI_USERNAME" not in env or "NAI_PASSWORD" not in env:
         #     raise RuntimeError("Please ensure that NAI_USERNAME and NAI_PASSWORD are set in your environment")
 
-        self._username = "bruhwut001@outlook.com"
-        self._password = "^?z8nPa@2ehP8#4"
+        self._username = username
+        self._password = password
 
         self.logger = Logger("NovelAI")
         self.logger.addHandler(StreamHandler())

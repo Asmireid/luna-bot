@@ -42,10 +42,9 @@ class Paint(commands.Cog):
         painting.is_active = True
 
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        configs = Config()
 
-        async with API() as api_handler:
-            configs = Config()
-
+        async with API(getattr(configs, "nai_username"), getattr(configs, "nai_password")) as api_handler:
             api = api_handler.api
 
             preset = ImagePreset()

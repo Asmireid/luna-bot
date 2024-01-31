@@ -124,6 +124,14 @@ class Config:
         self.save_config()
 
     @property
+    def nai_username(self):
+        return self.config.get('credentials', 'nai_username')
+
+    @property
+    def nai_password(self):
+        return self.config.get('credentials', 'nai_password')
+
+    @property
     def uc_preset(self):
         return self.config.get('painting_settings', 'uc_preset')
 
