@@ -14,6 +14,8 @@ from pathlib import Path
 
 from utilities import *
 
+import logging
+
 
 @dataclass
 class Session:
@@ -70,9 +72,12 @@ class Paint(commands.Cog):
                 async for _, img in api.high_level.generate_image(prompt_prefix + prompt, ImageModel.Anime_v3, preset):
                     (d / f"cache.png").write_bytes(img)
             except Exception as e:
-                raise Exception(f"NAI API Error: {repr(e)}")
-        await ctx.send("Painted!", file=discord.File(d / f"cache.png"))
-        painting.is_active = False
+                logging.error(f"NAI API Error: {repr(e)}", exc_info=True)
+                await ctx.send(f"Error occurred: {repr(e)}")
+            else:
+                await ctx.send("Painted!", file=discord.File(d / f"cache.png"))
+            finally:
+                painting.is_active = False
 
     @commands.command(name="pgen", help="generte danbooru tags using FredZhang7/danbooru-tag-generator")
     async def prompt_extend(self, ctx, *, prompt):

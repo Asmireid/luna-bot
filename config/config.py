@@ -187,9 +187,9 @@ class Config:
 
     @property
     def prompt_prefix(self):
-        return self.config.get('painting_settings', 'resolution')
+        return self.config.get('painting_settings', 'prompt_prefix')
 
     @prompt_prefix.setter
     def prompt_prefix(self, value):
-        self.config.set('painting_settings', 'resolution', value)
+        self.config.set('painting_settings', 'prompt_prefix', value)
         self.save_config()
