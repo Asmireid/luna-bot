@@ -23,6 +23,7 @@ class Session:
 painting = Session()
 prompt_generating = Session()
 
+
 class Paint(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -33,32 +34,36 @@ class Paint(commands.Cog):
 
     @commands.command(help="image generation with NAI V3")
     async def paint(self, ctx, *, prompt):
+        # somehow capitalized letters stuck the image generation
+        prompt = prompt.lower()
+
         d = Path("NAI_cache")
         d.mkdir(exist_ok=True)
 
+        configs = Config()
+
         if painting.is_active:
-            await try_reply(ctx, "急神魔？")
+            await try_reply(ctx, configs.wait_message)
             return
         painting.is_active = True
 
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        configs = Config()
 
-        async with API(getattr(configs, "nai_username"), getattr(configs, "nai_password")) as api_handler:
+        async with API(configs.nai_username, configs.nai_password) as api_handler:
             api = api_handler.api
 
             preset = ImagePreset()
-            preset.uc_preset = UCPreset(int(getattr(configs, "uc_preset")))
+            preset.uc_preset = UCPreset(int(configs.uc_preset))
             preset.n_samples = 1
-            preset.sampler = ImageSampler(getattr(configs, "sampler"))
-            preset.uc = getattr(configs, "uc_base")
+            preset.sampler = ImageSampler(configs.sampler)
+            preset.uc = configs.uc_base
             preset.seed = random.randint(1, 9999999999)
-            preset.resolution = ImageResolution(tuple(map(int, getattr(configs, "resolution").split(', '))))
+            preset.resolution = ImageResolution(tuple(map(int, configs.resolution.split(', '))))
             # if random.randint(0, 10) < 5:
             #     preset.resolution = ImageResolution.Normal_Portrait_v3
             # else:
             #     preset.resolution = ImageResolution.Normal_Landscape_v3
-            prompt_prefix = getattr(configs, "prompt_prefix")
+            prompt_prefix = configs.prompt_prefix
 
             await try_reply(ctx, "Painting...")
             try:
@@ -72,7 +77,7 @@ class Paint(commands.Cog):
     @commands.command(name="pgen", help="generte danbooru tags using FredZhang7/danbooru-tag-generator")
     async def prompt_extend(self, ctx, *, prompt):
         if prompt_generating.is_active:
-            await try_reply(ctx, "急急急急牛魔")
+            await try_reply(ctx, Config().wait_message)
             return
         prompt_generating.is_active = True
         tokenizer = GPT2Tokenizer.from_pretrained('distilgpt2')
@@ -87,6 +92,7 @@ class Paint(commands.Cog):
             outs[i] = str(outs[i]['generated_text']).replace('  ', '').rstrip(',')
         await try_reply(ctx, '\n\n'.join(outs))
         prompt_generating.is_active = False
+
 
 async def setup(bot):
     await bot.add_cog(Paint(bot))

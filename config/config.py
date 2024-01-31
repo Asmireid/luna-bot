@@ -52,6 +52,15 @@ class Config:
         self.save_config()
 
     @property
+    def wait_message(self):
+        return self.config.get('customizations', 'wait_message')
+
+    @wait_message.setter
+    def wait_message(self, value):
+        self.config.set('customizations', 'wait_message', value)
+        self.save_config()
+
+    @property
     def command_prefix(self):
         return self.config.get('settings', 'command_prefix')
 
