@@ -15,6 +15,11 @@ class Config:
         with open(self.config_file, 'w', encoding='utf-8') as configfile:
             self.config.write(configfile)
 
+    def is_sensitive(self, option):
+        if option in self.config['credentials']:
+            return True
+        return False
+
     @property
     def bot_token(self):
         return self.config.get('credentials', 'bot_token')

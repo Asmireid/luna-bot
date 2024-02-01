@@ -67,7 +67,7 @@ class Paint(commands.Cog):
             #     preset.resolution = ImageResolution.Normal_Landscape_v3
             prompt_prefix = configs.prompt_prefix
 
-            await try_reply(ctx, 'Painting "' + prompt + '"...')
+            conf = await try_reply(ctx, f'Painting "{prompt}"...')
             try:
                 async for _, img in api.high_level.generate_image(prompt_prefix + prompt, ImageModel.Anime_v3, preset):
                     (d / f"cache.png").write_bytes(img)
@@ -75,7 +75,8 @@ class Paint(commands.Cog):
                 logging.error(f"NAI API Error: {repr(e)}", exc_info=True)
                 await ctx.send(f"Error occurred: {repr(e)}")
             else:
-                await ctx.send("Painted!", file=discord.File(d / f"cache.png"))
+                await try_reply(ctx, "Painted!", file=discord.File(d / f"cache.png"))
+                await try_delete_confirmation(conf)
             finally:
                 painting.is_active = False
 
