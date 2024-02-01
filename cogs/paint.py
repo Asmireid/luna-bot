@@ -67,7 +67,7 @@ class Paint(commands.Cog):
             #     preset.resolution = ImageResolution.Normal_Landscape_v3
             prompt_prefix = configs.prompt_prefix
 
-            await try_reply(ctx, "Painting...")
+            await try_reply(ctx, 'Painting "' + prompt + '"...')
             try:
                 async for _, img in api.high_level.generate_image(prompt_prefix + prompt, ImageModel.Anime_v3, preset):
                     (d / f"cache.png").write_bytes(img)
