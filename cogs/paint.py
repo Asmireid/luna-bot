@@ -67,7 +67,7 @@ class Paint(commands.Cog):
             #     preset.resolution = ImageResolution.Normal_Landscape_v3
             prompt_prefix = configs.prompt_prefix
 
-            conf = await try_reply(ctx, f'Painting "{prompt}"...')
+            conf = await try_reply(ctx, f'Painting "{prompt_prefix} {prompt}"...')
             try:
                 async for _, img in api.high_level.generate_image(prompt_prefix + prompt, ImageModel.Anime_v3, preset):
                     (d / f"cache.png").write_bytes(img)
@@ -76,8 +76,8 @@ class Paint(commands.Cog):
                 await ctx.send(f"Error occurred: {repr(e)}")
             else:
                 await try_reply(ctx, "Painted!", file=discord.File(d / f"cache.png"))
-                await try_delete_confirmation(conf)
             finally:
+                await try_delete_confirmation(conf)
                 painting.is_active = False
 
     @commands.command(name="pgen", help="generte danbooru tags using FredZhang7/danbooru-tag-generator")
