@@ -198,3 +198,12 @@ class Config:
     def prompt_prefix(self, value):
         self.config.set('painting_settings', 'prompt_prefix', value)
         self.save_config()
+
+    @property
+    def speaker(self):
+        return self.config.get('tts_settings', 'speaker')
+
+    @speaker.setter
+    def speaker(self, value):
+        self.config.set('tts_settings', 'speaker', value)
+        self.save_config()

@@ -7,3 +7,5 @@ __pycache__
 config/config.ini
 util/main.py
 util/prompt_gen.py
+/cache
+run.bat

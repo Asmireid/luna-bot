@@ -3,6 +3,7 @@ import os
 import discord
 import time
 import platform
+import argparse
 from discord.ext import commands
 from config.config import Config
 
@@ -34,8 +35,16 @@ async def on_ready():
 
 
 async def load():
+    excluded_files = []
+    parser = argparse.ArgumentParser(description="Load bot extensions")
+    parser.add_argument("-i", "--ignore", nargs="+", help="Exclude specific files")
+    args = parser.parse_args()
+
+    if args.ignore:
+        excluded_files = args.ignore
+
     for filename in os.listdir("./cogs"):
-        if filename.endswith(".py"):
+        if filename.endswith(".py") and filename[:-3] not in excluded_files:
             await bot.load_extension(f"cogs.{filename[:-3]}")
 
 
