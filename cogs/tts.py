@@ -1,32 +1,12 @@
 import logging
 import os
+
+import aiohttp
 import requests
-from dataclasses import dataclass
 from discord.ext import commands
 from utilities import *
 
-
-@dataclass
-class Session:
-    is_active: bool = False
-
-
-tts_converting = Session()
-
-
-def save_voice(chosen_text, cache_folder='cache'):
-    api_url = f"https://mahiruoshi-bert-vits2-api.hf.space/?text={{{chosen_text}}}&speaker={Config().speaker}"
-    response = requests.get(api_url)
-
-    if response.status_code == 200:
-        os.makedirs(cache_folder, exist_ok=True)
-
-        local_path = os.path.join(cache_folder, 'cache.wav')
-
-        with open(local_path, 'wb') as wav_file:
-            wav_file.write(response.content)
-    else:
-        raise Exception("Error fetching voice response. Status code: " + str(response.status_code))
+tts_queue = asyncio.Queue()
 
 
 class TTS(commands.Cog):
@@ -39,18 +19,23 @@ class TTS(commands.Cog):
 
     @commands.command(aliases=['活字印刷'],
                       help="text to speech conversion")
-    async def tts(self, ctx, *, expression):
-        if tts_converting.is_active:
-            await try_reply(ctx, Config().wait_message)
-            return
-        tts_converting.is_active = True
-
+    async def tts(self, ctx, *, text):
         msg_embed = make_embed(ctx,
                                title=f"{Config().bot_name}'s Voice",
-                               descr=f"Trying to convert '{expression}' to speech.")
+                               descr=f"Trying to convert '{text}' to speech.")
         conf = await try_reply(ctx, msg_embed)
+
+        await tts_queue.put((text, ctx, conf))
+
+        if tts_queue.qsize() == 1:  # start the TTS processor if it's not already running
+            self.bot.loop.create_task(process_tts_queue())
+
+
+async def process_tts_queue():
+    while not tts_queue.empty():
+        text, ctx, conf = await tts_queue.get()
         try:
-            save_voice(expression)
+            await save_voice(text)
         except Exception as e:
             logging.error(f"TTS Error: {repr(e)}", exc_info=True)
             await ctx.send(f"Error occurred: {repr(e)}")
@@ -58,7 +43,19 @@ class TTS(commands.Cog):
             await try_reply(ctx, "Spoken!", file=discord.File("cache/cache.wav"))
         finally:
             await try_delete_confirmation(conf)
-            tts_converting.is_active = False
+
+
+async def save_voice(chosen_text, cache_folder='cache'):
+    api_url = f"https://mahiruoshi-bert-vits2-api.hf.space/?text={{{chosen_text}}}&speaker={Config().speaker}"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(api_url) as response:
+            if response.status == 200:
+                os.makedirs(cache_folder, exist_ok=True)
+                local_path = os.path.join(cache_folder, 'cache.wav')
+                with open(local_path, 'wb') as wav_file:
+                    wav_file.write(await response.read())
+            else:
+                raise Exception("Error fetching voice response. Status code: " + str(response.status))
 
 
 async def setup(bot):
