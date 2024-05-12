@@ -1,16 +1,11 @@
 import json
 import os
+import logging
 
-import requests
+import aiohttp
 from discord.ext import commands
 
 from utilities import *
-
-url = 'http://localhost:5001/api/v1/generate'
-headers = {
-    'accept': 'application/json',
-    'Content-Type': 'application/json'
-}
 
 # Define the request data as a Python dictionary
 request_data = {
@@ -18,6 +13,12 @@ request_data = {
     "temperature": 0.5,
     "top_p": 0.9
 }
+
+# Save chat history globally
+context = []
+
+# message queue
+chat_queue = asyncio.Queue()
 
 
 class Chat(commands.Cog):
@@ -28,28 +29,53 @@ class Chat(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(help="chats with user")
-    async def chat(self, ctx, *, question):
+    @commands.command(aliases=['说话'], help="chats with user")
+    async def chat(self, ctx, *, message):
+            new_message = {'role': ctx.author.nick or ctx.author.name, 'content': message}
+            params = {'temperature': Config().temperature, 'top_p': Config().top_p, 'top_k': Config().top_k, 'max_new_tokens': Config().max_new_tokens}
+            context.append(new_message)
+            if len(context) > 20:
+                context.pop(0)
+            await chat_queue.put((context.copy(), params, ctx))
+            if chat_queue.qsize() == 1:
+                self.bot.loop.create_task(process_chat_queue())
+
+    @commands.command(aliases=['清空', "忘记一切"], help="clears chat history")
+    async def reset_chat(self, ctx):
+        global context
+        context = []
+        await try_reply(ctx, "阿巴阿巴! 我忘记了一切!")
+            
+            
+async def manage_context(new_message):
+    global context
+    context.append(new_message)
+    if len(context) > 20:
+        context.pop(0)
+
+
+async def process_chat_queue():
+    while not chat_queue.empty():
+        curr_context, params, ctx = await chat_queue.get()
         try:
-            # Clean input
-            user_input = "###instruction: " + question
-            request_data['prompt'] = user_input
-            print(user_input)
-            # Convert the request data to JSON format
-            data = json.dumps(request_data)
-            # Send the POST request
-            response = requests.post(url, headers=headers, data=data)
-            # Check if the request was successful (HTTP status code 200)
-            # response_chat = ''
-            text = "Can't get response..."
-            if response.status_code == 200:
-                # Parse and print the response as JSON
-                response_data = response.json()
-                text = response_data["results"][0]["text"]
-                print(text)
-            await try_reply(ctx, text)
+            await chat_with_bot(curr_context, params, ctx)
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logging.error(f"Chat Error: {repr(e)}", exc_info=True)
+
+
+async def chat_with_bot(curr_context, params, ctx):
+    async with aiohttp.ClientSession() as session:
+        cleaned_sys_prompt = Config().system_prompt.replace("{{char}}",Config().bot_name).replace("{{user}}", ctx.author.nick or ctx.author.name)
+        curr_context_with_system_prompt = [{'role': 'system', 'content': cleaned_sys_prompt}] + curr_context
+        params['context'] = curr_context_with_system_prompt
+        async with session.post(Config().api_url, json=params) as response:
+            if response.status == 200:
+                response_data = await response.json()
+                response = {'role': Config().bot_name, 'content': response_data['response']}
+                await manage_context(response_data)
+                await try_reply(ctx, response_data['response'])
+            else:
+                raise Exception("Error fetching chat response. Status code: " + str(response.status))
 
 
 async def setup(bot):

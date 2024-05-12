@@ -207,3 +207,57 @@ class Config:
     def speaker(self, value):
         self.config.set('tts_settings', 'speaker', value)
         self.save_config()
+
+    @property
+    def api_url(self):
+        return self.config.get('chat_settings', 'api_url')
+
+    @api_url.setter
+    def api_url(self, value):
+        self.config.set('chat_settings', 'api_url', value)
+        self.save_config()
+
+    @property
+    def temperature(self):
+        return self.config.getfloat('chat_settings', 'temperature')
+    
+    @temperature.setter
+    def temperature(self, value):
+        self.config.set('chat_settings', 'temperature', value)
+        self.save_config()
+
+    @property
+    def top_p(self):
+        return self.config.getfloat('chat_settings', 'top_p')
+    
+    @top_p.setter
+    def top_p(self, value):
+        self.config.set('chat_settings', 'top_p', value)
+        self.save_config()
+
+    @property
+    def top_k(self):
+        return self.config.getint('chat_settings', 'top_k')
+    
+    @top_k.setter
+    def top_k(self, value):
+        self.config.set('chat_settings', 'top_k', value)
+        self.save_config()
+
+    @property
+    def max_new_tokens(self):
+        return self.config.getint('chat_settings', 'max_new_tokens')
+    
+    @max_new_tokens.setter
+    def max_new_tokens(self, value):
+        self.config.set('chat_settings', 'max_new_tokens', value)
+        self.save_config()
+    
+    @property
+    def system_prompt(self):
+        return self.config.get('chat_settings', 'system_prompt')
+
+    @system_prompt.setter
+    def system_prompt(self, value):
+        self.config.set('chat_settings', 'system_prompt', value)
+        self.save_config()
