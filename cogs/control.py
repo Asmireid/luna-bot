@@ -31,6 +31,7 @@ class Control(commands.Cog):
             await try_display_confirmation(ctx, msg_embed)
 
             if ctx.voice_client:
+                # move to the author's current channel if bot is already in a channel
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
             else:
                 await ctx.author.voice.channel.connect()
