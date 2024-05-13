@@ -2,7 +2,6 @@ import random
 import os
 from dataclasses import dataclass
 
-import requests
 from discord.ext import commands
 
 from novelai_api.ImagePreset import ImageModel, ImagePreset, ImageResolution, UCPreset, ImageSampler
@@ -61,6 +60,8 @@ class Paint(commands.Cog):
             preset.uc = configs.uc_base
             preset.seed = random.randint(1, 9999999999)
             preset.resolution = ImageResolution(tuple(map(int, configs.resolution.split(', '))))
+            preset.decrisper = True
+            preset.quality_toggle = False
             # if random.randint(0, 10) < 5:
             #     preset.resolution = ImageResolution.Normal_Portrait_v3
             # else:
