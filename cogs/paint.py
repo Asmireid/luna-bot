@@ -58,14 +58,10 @@ class Paint(commands.Cog):
             preset.n_samples = 1
             preset.sampler = ImageSampler(configs.sampler)
             preset.uc = configs.uc_base
-            preset.seed = random.randint(1, 9999999999)
+            preset.seed = random.randint(1, 9999999999) if configs.seed == -1 else configs.seed
             preset.resolution = ImageResolution(tuple(map(int, configs.resolution.split(', '))))
-            preset.decrisper = True
-            preset.quality_toggle = False
-            # if random.randint(0, 10) < 5:
-            #     preset.resolution = ImageResolution.Normal_Portrait_v3
-            # else:
-            #     preset.resolution = ImageResolution.Normal_Landscape_v3
+            preset.decrisper = configs.decrisper
+            preset.quality_toggle = configs.quality_toggle
             prompt_prefix = configs.prompt_prefix
 
             conf = await try_reply(ctx, f'Painting "{prompt_prefix} {prompt}"...')
@@ -74,7 +70,7 @@ class Paint(commands.Cog):
                     (d / f"cache.png").write_bytes(img)
             except Exception as e:
                 logging.error(f"NAI API Error: {repr(e)}", exc_info=True)
-                await ctx.send(f"Error occurred: {repr(e)}")
+                await try_reply(ctx, f"Error occurred: {repr(e)}")
             else:
                 await try_reply(ctx, "Painted!", file=discord.File(d / f"cache.png"))
             finally:

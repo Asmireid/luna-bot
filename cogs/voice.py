@@ -62,7 +62,7 @@ class Voice(commands.Cog):
                 await try_display_confirmation(ctx, f"Now playing: '{source.title}'")
             except Exception as e:
                 logging.error(f"Play Error: {repr(e)}", exc_info=True)
-                await ctx.send(f"Error occurred: {repr(e)}")
+                await try_reply(ctx, f"Error occurred: {repr(e)}")
                 break
 
     @commands.command(help="displays the current audio queue.")
@@ -136,7 +136,7 @@ class Voice(commands.Cog):
                 await save_voice(text)
             except Exception as e:
                 logging.error(f"TTS Error: {repr(e)}", exc_info=True)
-                await ctx.send(f"Error occurred: {repr(e)}")
+                await try_reply(ctx, f"Error occurred: {repr(e)}")
             else:
                 await try_reply(ctx, "Spoken!", file=discord.File("cache/cache.wav"))
             finally:

@@ -200,6 +200,24 @@ class Config:
         self.save_config()
 
     @property
+    def decrisper(self):
+        return self.config.getboolean('painting_settings', 'decrisper')
+
+    @decrisper.setter
+    def decrisper(self, value):
+        self.config.set('painting_settings', 'decrisper', value)
+        self.save_config()
+
+    @property
+    def quality_toggle(self):
+        return self.config.getboolean('painting_settings', 'quality_toggle')
+
+    @quality_toggle.setter
+    def quality_toggle(self, value):
+        self.config.set('painting_settings', 'quality_toggle', value)
+        self.save_config()
+
+    @property
     def speaker(self):
         return self.config.get('tts_settings', 'speaker')
 
@@ -220,7 +238,7 @@ class Config:
     @property
     def temperature(self):
         return self.config.getfloat('chat_settings', 'temperature')
-    
+
     @temperature.setter
     def temperature(self, value):
         self.config.set('chat_settings', 'temperature', value)
@@ -229,7 +247,7 @@ class Config:
     @property
     def top_p(self):
         return self.config.getfloat('chat_settings', 'top_p')
-    
+
     @top_p.setter
     def top_p(self, value):
         self.config.set('chat_settings', 'top_p', value)
@@ -238,7 +256,7 @@ class Config:
     @property
     def top_k(self):
         return self.config.getint('chat_settings', 'top_k')
-    
+
     @top_k.setter
     def top_k(self, value):
         self.config.set('chat_settings', 'top_k', value)
@@ -247,12 +265,12 @@ class Config:
     @property
     def max_new_tokens(self):
         return self.config.getint('chat_settings', 'max_new_tokens')
-    
+
     @max_new_tokens.setter
     def max_new_tokens(self, value):
         self.config.set('chat_settings', 'max_new_tokens', value)
         self.save_config()
-    
+
     @property
     def system_prompt(self):
         return self.config.get('chat_settings', 'system_prompt')
