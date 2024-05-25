@@ -1,6 +1,5 @@
 import os
 import logging
-
 import aiohttp
 from discord.ext import commands
 

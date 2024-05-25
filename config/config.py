@@ -227,6 +227,10 @@ class Config:
         self.save_config()
 
     @property
+    def openai_api_key(self):
+        return self.config.get('credentials', 'openai_api_key')
+
+    @property
     def api_url(self):
         return self.config.get('chat_settings', 'api_url')
 
