@@ -33,13 +33,10 @@ class Randomization(commands.Cog):
 
     @commands.command(aliases=['c', 'choice'],
                       help="chooses one between inputs")
-    async def choose(self, ctx, *, choices):
-        choices = choices.split('|')
-        choice = random.choice(choices).strip()
-
+    async def choose(self, ctx, *choices: str):
         msg_embed = make_embed(ctx,
                                title=f"{Config().bot_name}'s Choice",
-                               descr=choice)
+                               descr=random.choice(choices))
 
         await try_reply(ctx, msg_embed)
 
