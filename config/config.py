@@ -276,6 +276,22 @@ class Config:
         self.save_config()
 
     @property
+    def model(self):
+        return self.config.get('chat_settings', 'model')
+
+    @model.setter
+    def model(self, value):
+        self.config.set('chat_settings', 'model', value)
+
+    @property
+    def context_limit(self):
+        return self.config.getint('chat_settings', 'context_limit')
+
+    @context_limit.setter
+    def context_limit(self, value):
+        self.config.set('chat_settings', 'context_limit', value)
+
+    @property
     def system_prompt(self):
         return self.config.get('chat_settings', 'system_prompt')
 
