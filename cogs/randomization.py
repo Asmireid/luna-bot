@@ -10,6 +10,7 @@ from utilities import *
 class Randomization(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.genshin_response = None
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -18,12 +19,15 @@ class Randomization(commands.Cog):
     @commands.command(aliases=['原神', '原'],
                       help="returns superposition state of genshin")
     async def genshin(self, ctx):
-        responses = ['原神怎么你了 🤬', '原批4000+ 🤗']
-        response = random.choice(responses)
+        if self.genshin_response is None:
+            responses = ['原神怎么你了 🤬', '原批4000+ 🤗']
+            self.genshin_response = random.choice(responses)
 
-        msg_embed = make_embed(ctx,
-                               title=f"{Config().bot_name}'s Comment",
-                               descr=response)
+        msg_embed = make_embed(
+            ctx,
+            title=f"{Config().bot_name}'s Comment",
+            descr=self.genshin_response
+        )
 
         await try_reply(ctx, msg_embed)
 

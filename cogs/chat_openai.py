@@ -39,6 +39,8 @@ class ChatOpenAI(commands.Cog):
 
             client = OpenAI(api_key=configs.openai_api_key)
 
+            print(message)
+
             await manage_context({'role': 'user', 'content': message})
             messages = [{'role': 'system', 'content': configs.system_prompt}]
             messages.extend(context)

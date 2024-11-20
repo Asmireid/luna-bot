@@ -38,7 +38,7 @@ class Paint(commands.Cog):
         # somehow capitalized letters stuck the image generation
         prompt = prompt.lower()
 
-        d = Path("NAI_cache")
+        d = Path("cache")
         d.mkdir(exist_ok=True)
 
         configs = Config()
