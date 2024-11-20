@@ -1,17 +1,55 @@
 import logging
 import os
 import aiohttp
-
+import yt_dlp as youtube_dl
 from discord import FFmpegPCMAudio
 from discord.ext import commands
 from utilities import *
 
 
+class YTDLSource(discord.PCMVolumeTransformer):
+    YTDL_OPTIONS = {
+        'format': 'bestaudio/best',
+        'extractaudio': True,
+        'audioformat': 'mp3',
+        'outtmpl': '%(id)s.%(ext)s',
+        'restrictfilenames': True,
+        'noplaylist': True,
+        'nocheckcertificate': True,
+        'quiet': True,
+        'no_warnings': True,
+        'default_search': 'auto',
+        'source_address': '0.0.0.0',  # Bind to IPv4
+    }
+
+    ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
+
+    def __init__(self, source, *, data, volume=0.5):
+        super().__init__(source, volume)
+        self.data = data
+        self.title = data.get('title', 'Unknown title')
+        self.url = data.get('url')
+
+    @classmethod
+    async def from_url(cls, url, *, loop=None, stream=False):
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: cls.ytdl.extract_info(url, download=not stream))
+
+        if 'entries' in data:  # Handle playlists, take the first entry
+            data = data['entries'][0]
+
+        filename = data['url'] if stream else cls.ytdl.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename), data=data)
+
+
 class FFmpegPCMAudioWithTitle(FFmpegPCMAudio):
-    def __init__(self, source, **kwargs):
+    def __init__(self, source, title=None, **kwargs):
+        """
+        Custom FFmpegPCMAudio class that includes a title attribute.
+        If `title` is not provided, it uses the base filename as the title.
+        """
         super().__init__(source, **kwargs)
-        # extracts the base filename to use as the title
-        self.title = os.path.basename(source)
+        self.title = title if title else os.path.basename(source)
 
 
 class Voice(commands.Cog):
@@ -24,12 +62,16 @@ class Voice(commands.Cog):
     async def on_ready(self):
         print(f"{os.path.basename(__file__)} is ready.")
 
-    @commands.command(help="plays or queues local audio file in voice channel")
-    async def play(self, ctx, path):
-        voice = ctx.voice_client
-        if not voice:
+    async def ensure_voice(self, ctx):
+        if not ctx.voice_client:
             await try_display_confirmation(ctx, "I'm not connected to a voice channel.")
-            return
+            return False
+        return True
+
+    @commands.command(help="plays or queues local audio file in voice channel")
+    async def play_local(self, ctx, path):
+        if not await self.ensure_voice(ctx): return
+        voice = ctx.voice_client
 
         if os.path.isdir(path):
             msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice",
@@ -52,14 +94,63 @@ class Voice(commands.Cog):
         if not voice.is_playing():
             await self.play_audio(ctx)
 
+    @commands.command(help="Plays from a url (almost anything youtube_dl supports)")
+    async def play_url_predownload(self, ctx, *, url):
+        if not await self.ensure_voice(ctx): return
+        voice = ctx.voice_client
+
+        async with ctx.typing():
+            try:
+                player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=False)
+                await self.audio_queue.put(player)
+                msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice",
+                                       descr=f"Queued video (predownload): {player.title}")
+                await try_display_confirmation(ctx, msg_embed)
+            except Exception as e:
+                logging.error(f"YT Error: {repr(e)}", exc_info=True)
+                await try_reply(ctx, f"Error occurred: {repr(e)}")
+                return
+
+        if not voice.is_playing():
+            await self.play_audio(ctx)
+
+    @commands.command(help="Streams from a url (same as yt, but doesn't predownload)")
+    async def play_url(self, ctx, *, url):
+        if not await self.ensure_voice(ctx): return
+        voice = ctx.voice_client
+
+        async with ctx.typing():
+            try:
+                player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
+                await self.audio_queue.put(player)
+                msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice",
+                                       descr=f"Queued video as stream: {player.title}")
+                await try_display_confirmation(ctx, msg_embed)
+            except Exception as e:
+                logging.error(f"Stream Error: {repr(e)}", exc_info=True)
+                await try_reply(ctx, f"Error occurred: {repr(e)}")
+                return
+
+        if not voice.is_playing():
+            await self.play_audio(ctx)
+
     async def play_audio(self, ctx):
         voice = ctx.voice_client
         while not self.audio_queue.empty() and not voice.is_playing():
             next_audio = await self.audio_queue.get()
             try:
-                source = FFmpegPCMAudioWithTitle(next_audio)
-                voice.play(source, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_audio(ctx), ctx.bot.loop))
-                await try_display_confirmation(ctx, f"Now playing: '{source.title}'")
+                if isinstance(next_audio, str):  # i.e. local file
+                    source = FFmpegPCMAudioWithTitle(next_audio)
+                    title = source.title
+                else:  # URL (YTDLSource object)
+                    source = next_audio
+                    title = source.title
+
+                voice.play(source,
+                           after=lambda e: asyncio.run_coroutine_threadsafe(self.play_audio(ctx), self.bot.loop))
+                msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice",
+                                       descr=f"Now playing: {title}")
+                await try_display_confirmation(ctx, msg_embed)
             except Exception as e:
                 logging.error(f"Play Error: {repr(e)}", exc_info=True)
                 await try_reply(ctx, f"Error occurred: {repr(e)}")
@@ -67,15 +158,24 @@ class Voice(commands.Cog):
 
     @commands.command(help="displays the current audio queue.")
     async def queue(self, ctx):
-        if self.audio_queue.empty():
-            await ctx.send("The audio queue is currently empty.")
-            return
+        try:
+            if self.audio_queue.empty():
+                await try_reply(ctx, "The audio queue is currently empty.")
+                return
 
-        queue_list = list(self.audio_queue._queue)
-        msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice", descr="Current Queue:")
-        for index, item in enumerate(queue_list):
-            msg_embed.add_field(name=f"{index + 1}", value=f"{os.path.basename(item)}", inline=False)
-        await try_reply(ctx, msg_embed)
+            queue_list = list(self.audio_queue._queue)
+            msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice", descr="Current Queue:")
+
+            for index, item in enumerate(queue_list):
+                if isinstance(item, str):  # i.e. local file
+                    msg_embed.add_field(name=f"{index + 1}", value=f"{os.path.basename(item)}", inline=False)
+                else:  # URL (YTDLSource object)
+                    msg_embed.add_field(name=f"{index + 1}", value=f"{item.title}", inline=False)
+
+            await try_reply(ctx, msg_embed)
+        except Exception as e:
+            logging.error(f"Queue Error: {repr(e)}", exc_info=True)
+            await try_reply(ctx, f"Error occurred: {repr(e)}")
 
     @commands.command(help="pauses the current audio in voice channel")
     async def pause(self, ctx):
