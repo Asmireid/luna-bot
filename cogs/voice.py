@@ -1,4 +1,5 @@
 import logging
+import tempfile
 import os
 import aiohttp
 import yt_dlp as youtube_dl
@@ -12,7 +13,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'format': 'bestaudio/best',
         'extractaudio': True,
         'audioformat': 'mp3',
-        'outtmpl': '%(id)s.%(ext)s',
+        'outtmpl': None,  # Placeholder, will be set dynamically
         'restrictfilenames': True,
         'noplaylist': True,
         'nocheckcertificate': True,
@@ -22,24 +23,39 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'source_address': '0.0.0.0',  # Bind to IPv4
     }
 
-    ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
+    ytdl = None  # This will be initialized later with a specific temp path
 
-    def __init__(self, source, *, data, volume=0.5):
+    def __init__(self, source, *, data, temp_dir, volume=0.5):
         super().__init__(source, volume)
         self.data = data
         self.title = data.get('title', 'Unknown title')
         self.url = data.get('url')
+        self.temp_dir = temp_dir  # Track the temp directory for cleanup
 
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
+
+        # Create a temporary directory for the downloads
+        temp_dir = tempfile.mkdtemp()
+        cls.YTDL_OPTIONS['outtmpl'] = os.path.join(temp_dir, '%(id)s.%(ext)s')  # Set outtmpl to temp dir
+        cls.ytdl = youtube_dl.YoutubeDL(cls.YTDL_OPTIONS)  # Reinitialize with the new path
+
+        # Extract video information
         data = await loop.run_in_executor(None, lambda: cls.ytdl.extract_info(url, download=not stream))
 
         if 'entries' in data:  # Handle playlists, take the first entry
             data = data['entries'][0]
 
         filename = data['url'] if stream else cls.ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename), data=data)
+        return cls(discord.FFmpegPCMAudio(filename), data=data, temp_dir=temp_dir)
+
+    def cleanup(self):
+        """Delete the temporary directory and its contents."""
+        if self.temp_dir and os.path.exists(self.temp_dir):
+            for file in os.listdir(self.temp_dir):
+                os.remove(os.path.join(self.temp_dir, file))
+            os.rmdir(self.temp_dir)
 
 
 class FFmpegPCMAudioWithTitle(FFmpegPCMAudio):
@@ -94,8 +110,8 @@ class Voice(commands.Cog):
         if not voice.is_playing():
             await self.play_audio(ctx)
 
-    @commands.command(help="Plays from a url (almost anything youtube_dl supports)")
-    async def play_url_predownload(self, ctx, *, url):
+    @commands.command(aliases=['唱'], help="Plays from a url (almost anything youtube_dl supports)")
+    async def play_url(self, ctx, *, url):
         if not await self.ensure_voice(ctx): return
         voice = ctx.voice_client
 
@@ -115,7 +131,7 @@ class Voice(commands.Cog):
             await self.play_audio(ctx)
 
     @commands.command(help="Streams from a url (same as yt, but doesn't predownload)")
-    async def play_url(self, ctx, *, url):
+    async def play_url_stream(self, ctx, *, url):
         if not await self.ensure_voice(ctx): return
         voice = ctx.voice_client
 
@@ -139,18 +155,30 @@ class Voice(commands.Cog):
         while not self.audio_queue.empty() and not voice.is_playing():
             next_audio = await self.audio_queue.get()
             try:
-                if isinstance(next_audio, str):  # i.e. local file
+                if isinstance(next_audio, str):  # Local file
                     source = FFmpegPCMAudioWithTitle(next_audio)
                     title = source.title
-                else:  # URL (YTDLSource object)
+                else:  # YTDLSource object
                     source = next_audio
                     title = source.title
 
-                voice.play(source,
-                           after=lambda e: asyncio.run_coroutine_threadsafe(self.play_audio(ctx), self.bot.loop))
+                def after_playback(error):
+                    if error:
+                        logging.error(f"Playback error: {error}")
+                    # Cleanup after playback finishes
+                    if isinstance(next_audio, YTDLSource):
+                        next_audio.cleanup()
+                    # Trigger the next audio playback
+                    asyncio.run_coroutine_threadsafe(self.play_audio(ctx), self.bot.loop)
+
+                # Start playback
+                voice.play(source, after=after_playback)
+
+                # Notify user
                 msg_embed = make_embed(ctx, title=f"{Config().bot_name}'s Voice",
                                        descr=f"Now playing: {title}")
                 await try_display_confirmation(ctx, msg_embed)
+
             except Exception as e:
                 logging.error(f"Play Error: {repr(e)}", exc_info=True)
                 await try_reply(ctx, f"Error occurred: {repr(e)}")
