@@ -38,6 +38,6 @@ def make_embed(ctx, title, descr=None, color=discord.Color.dark_embed()) -> disc
     msg_embed = discord.Embed(title=title, description=descr, color=color)
     msg_embed.set_author(name=f"Requested by {ctx.author.nick or ctx.author.name}",
                          icon_url=ctx.author.avatar.url if ctx.author.avatar else ctx.author.default_avatar.url)
-    msg_embed.set_footer(text=Config().footer)
+    msg_embed.set_footer(text=Config().embed_footer)
 
     return msg_embed

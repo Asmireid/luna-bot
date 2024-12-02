@@ -39,6 +39,7 @@ class Paint(commands.Cog):
     @commands.command(help="image generation with NAI V3")
     async def paint(self, ctx, *, prompt):
         configs = Config()
+        print(configs.width)
         if painting.is_active:
             await try_reply(ctx, configs.wait_message)
             return
@@ -46,7 +47,16 @@ class Paint(commands.Cog):
         painting.is_active = True
         prompt = prompt.lower()
 
-        images = prompt_to_image(load_workflow(r"util\test_ws_save_img.json"), prompt, '')
+        images = prompt_to_image(load_workflow(configs.work_flow), 
+                                 configs.paint_model, 
+                                 prompt, 
+                                 configs.negative, 
+                                 configs.width, 
+                                 configs.height, 
+                                 configs.batch_size, 
+                                 configs.sampler_name, 
+                                 configs.steps, 
+                                 configs.seed)
         # for image in images:
         # await try_reply(ctx, "Painted!", file=discord.File(io.BytesIO(image['image_data']), filename=image['file_name']))
         files = [discord.File(io.BytesIO(image['image_data']), filename=image['file_name']) for image in images]

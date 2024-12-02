@@ -113,16 +113,30 @@ def generate_image_by_prompt(prompt, output_path):
     finally:
         ws.close()
 
-def prompt_to_image(workflow, positve_prompt, negative_prompt=None, width=None, height=None, batch_size=None, ):
+def prompt_to_image(workflow, model, positive_prompt, negative_prompt, width, height, batch_size, sampler_name, steps, seed):
     prompt = json.loads(workflow)
     id_to_class_type = {id: details['class_type'] for id, details in prompt.items()}
     k_sampler = [key for key, value in id_to_class_type.items() if value == 'KSampler'][0]
-    prompt.get(k_sampler)['inputs']['seed'] = random.randint(10**14, 10**15 - 1)
-    postive_input_id = prompt.get(k_sampler)['inputs']['positive'][0]
-    prompt.get(postive_input_id)['inputs']['text'] = positve_prompt
+    if seed == -1:
+        prompt.get(k_sampler)['inputs']['seed'] = random.randint(10**14, 10**15 - 1)
+    else:
+        prompt.get(k_sampler)['inputs']['seed'] = seed
 
-    if negative_prompt:
-        negative_input_id = prompt.get(k_sampler)['inputs']['negative'][0]
-        prompt.get(negative_input_id)['inputs']['text'] = negative_prompt
+    prompt.get(k_sampler)['inputs']['sampler_name'] = sampler_name
+    prompt.get(k_sampler)['inputs']['steps'] = steps
+
+    model_input_id = prompt.get(k_sampler)['inputs']['model'][0]
+    prompt.get(model_input_id)['inputs']['ckpt_name'] = model
+
+    latent_image_input_id = prompt.get(k_sampler)['inputs']['latent_image'][0]
+    prompt.get(latent_image_input_id)['inputs']['width'] = width
+    prompt.get(latent_image_input_id)['inputs']['height'] = height
+    prompt.get(latent_image_input_id)['inputs']['batch_size'] = batch_size
+
+    postive_input_id = prompt.get(k_sampler)['inputs']['positive'][0]
+    prompt.get(postive_input_id)['inputs']['text'] = positive_prompt
+
+    negative_input_id = prompt.get(k_sampler)['inputs']['negative'][0]
+    prompt.get(negative_input_id)['inputs']['text'] = negative_prompt
 
     return generate_image_by_prompt(prompt, './output/')
