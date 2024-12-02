@@ -16,16 +16,16 @@ async def try_delete_confirmation(msg):
         await msg.delete()
 
 
-async def try_reply(ctx, msg, file=None):
+async def try_reply(ctx, msg, file=None, **kwargs):
     await try_delete_invocation(ctx.message)
     if isinstance(msg, discord.Embed):
         return (
-            await ctx.reply(embed=msg, file=file, mention_author=Config().mention_author, ephemeral=Config().ephemeral)
+            await ctx.reply(embed=msg, file=file, mention_author=Config().mention_author, ephemeral=Config().ephemeral, **kwargs)
             if Config().reply
-            else await ctx.send(embed=msg, file=file, ephemeral=Config().ephemeral))
-    return (await ctx.reply(msg, file=file, mention_author=Config().mention_author, ephemeral=Config().ephemeral)
+            else await ctx.send(embed=msg, file=file, ephemeral=Config().ephemeral, **kwargs))
+    return (await ctx.reply(msg, file=file, mention_author=Config().mention_author, ephemeral=Config().ephemeral, **kwargs)
             if Config().reply
-            else await ctx.send(msg, file=file, ephemeral=Config().ephemeral))
+            else await ctx.send(msg, file=file, ephemeral=Config().ephemeral, **kwargs))
 
 
 async def try_display_confirmation(ctx, msg):
