@@ -1,5 +1,7 @@
 import os
 import logging
+
+from discord.ext.commands import Author
 from openai import OpenAI
 from discord.ext import commands
 from utilities import *
@@ -37,7 +39,9 @@ class ChatOpenAI(commands.Cog):
         try:
             configs = Config()
 
-            client = OpenAI(api_key=configs.openai_api_key)
+            client = OpenAI(api_key=configs.openai_api_key, base_url=configs.base_url)
+            author = ctx.author.display_name
+            message = f"{author}: {message}"
 
             print(message)
 
